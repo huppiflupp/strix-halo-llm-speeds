@@ -31,6 +31,7 @@ Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,DKMS driver build of 2026-09-15,1
 Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,smoke test,10.1,,,,A,2026-09-15,0,scored 4/6 where the iGPU run scored 6/6
 gpt-oss-20b-FLM,"21B MoE, ~3.6B active",,14,FastFlowLM,NPU,first run,19.3,,26.3,21.8–26.3,D,2026-08-16,1,
 gpt-oss-20b-FLM,"21B MoE, ~3.6B active",,14,FastFlowLM,NPU,smoke test,16.2,,,,A,2026-09-15,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build hybrid),iGPU,"Vulkan, no MTP, llama-bench -fa 1 -ub 2048",62.97,55.59 at depth 16384,1523.18,"pp512 1445, pp4096 1793, pp16384 1523",C,2026-09-29,0,
 Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build),iGPU,"Vulkan, with MTP, family chat service",97,≈ 97,1839,,D,2026-09-22,1,"prompt: 2048 tokens, empty context"
 Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork),iGPU,"Vulkan, with MTP",89.8,,1610,,D,2026-09-18,0,"prompt figure from 2026-09-21, 2048 tokens"
 Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork 10565),iGPU,"Vulkan, MTP draft length 1",77.8,,,,D,2026-09-18,0,
@@ -90,6 +91,7 @@ Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,Ollama 0.34.1,i
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 2",41.3,,,,D,2026-09-28,1,"occupies 94 GiB, runs only alone"
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 2, full context 262144",40.67,,,,D,2026-09-29,0,"one prompt; 78.2 GiB GTT + 27.1 GiB host RAM"
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 3",40.6,,,,D,2026-09-28,0,
+Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, no MTP, llama-bench -fa 1 -ub 2048",27.19,23.90 at depth 16384,461.65,"pp512 504, pp4096 508, pp16384 462",C,2026-09-29,0,prompt is 3.3x slower than Qwen3.6
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, no MTP",26.85,,,,D,2026-09-28,0,
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (strix fork 10707),iGPU,"Vulkan, no MTP",26.5,,,,D,2026-09-16,0,
 Qwen3.8-Flash-Next,"125B MoE, 6B active",FP8,185.6,colibri (dev),CPU,"CPU, experts streamed from SSD, cache 256 per layer",7.2,6.9–7.5,,,E,2026-09-28,0,warm page cache

@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 39 models with a measured speed, 165 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 39 models with a measured speed, 167 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -90,7 +90,7 @@ were not measured here and are therefore not in the list.
 Models with more than one measurement, fastest first. Click a name to open its table.
 
 <details>
-<summary><b>Qwen3.6-35B-A3B</b> — 30 measurements, 10.2 to 100.5 tok/s</summary>
+<summary><b>Qwen3.6-35B-A3B</b> — 31 measurements, 10.2 to 100.5 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
@@ -108,6 +108,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | colibri fork (branch decode-gpu) | own GPU decode, no MTP | int4, 22 GB | 66.9 | — | E | 2026-09-28 | — |
 | llama.cpp master c85b92c69 | Vulkan, llama-bench tg128 / pp512 | UD-IQ4_XS, 17 GB | 63.15 | 1402 | C | 2026-09-29 | new IQ4_XS kernels, no lab patches; with PR #29182 (MoE tile selection) pp512 drops to 1337 |
 | llama.cpp master bfdc321 | Vulkan, llama-bench tg200 / pp4096 | UD-IQ4_XS, 17 GB | 63.07 | 1037.4 | C | 2026-09-14 | — |
+| llama.cpp (lab build hybrid) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048 | UD-IQ4_XS, 17 GB | 55.59 at depth 16384 | pp512 1445, pp4096 1793, pp16384 1523 | C | 2026-09-29 | — |
 | llama.cpp (lab build) | Vulkan, llama-bench tg128 / pp512 | UD-IQ4_XS, 17 GB | 62.96 | 1460 | C | 2026-09-29 | — |
 | llama.cpp (frozen build) | Vulkan, no MTP, llama-bench tg256 / pp512 | UD-IQ4_XS, 17 GB | 62.7 | 1461 | C | 2026-09-26 | — |
 | llama.cpp 9731ad3 | Vulkan, llama-bench tg200 / pp4096 | UD-IQ4_XS, 17 GB | 62.23 | 982.8 | C | 2026-08 | — |
@@ -183,13 +184,14 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-Flash-Next</b> — 7 measurements, 6.3 to 41.3 tok/s</summary>
+<summary><b>Qwen3.8-Flash-Next</b> — 8 measurements, 6.3 to 41.3 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2 | UD-IQ4_XS, 93.7 GB | 41.3 | — | D | 2026-09-28 | occupies 94 GiB, runs only alone |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2, full context 262144 | UD-IQ4_XS, 93.7 GB | 40.67 | — | D | 2026-09-29 | one prompt; 78.2 GiB GTT + 27.1 GiB host RAM |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 3 | UD-IQ4_XS, 93.7 GB | 40.6 | — | D | 2026-09-28 | — |
+| llama.cpp (PR #28243) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048 | UD-IQ4_XS, 93.7 GB | 23.90 at depth 16384 | pp512 504, pp4096 508, pp16384 462 | C | 2026-09-29 | prompt is 3.3x slower than Qwen3.6 |
 | llama.cpp (PR #28243) | Vulkan, no MTP | UD-IQ4_XS, 93.7 GB | 26.85 | — | D | 2026-09-28 | — |
 | llama.cpp (strix fork 10707) | Vulkan, no MTP | UD-IQ4_XS, 93.7 GB | 26.5 | — | D | 2026-09-16 | — |
 | colibri (dev) on the **CPU** | CPU, experts streamed from SSD, cache 256 per layer | FP8, 185.6 GB | 6.9–7.5 | — | E | 2026-09-28 | warm page cache |
