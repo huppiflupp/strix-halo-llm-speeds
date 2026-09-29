@@ -355,7 +355,8 @@ at `-ub 512`; master 6.3124 and master + #25666 6.3154 at `-ub 4`. Qwen3-30B: 6.
 6.6770 (master, master + #29182), 6.6844 / 6.6861 at `-ub 4` with / without the new MMVQ path.
 None of the new paths computes wrongly.
 
-**Qwen3.8-Flash-Next.** Occupies 90–94 GiB when loaded and only runs alone. Greedy output
+**Qwen3.8-Flash-Next.** Occupies 90–94 GiB when loaded and only runs alone. With the full 262,144-token context and MTP it still fits alone: 78.2 GiB GTT plus 27.1 GiB host RAM,
+about 10 GiB left (probe 2026-09-29, 40.7 tok/s in the smoke test); a second 262k slot does not fit. Greedy output
 with MTP differs from greedy output without it (from token 15–53 on). Checked on 2026-09-29
 token by token: at every divergence the MTP token is the target model's close second choice,
 and the target model alone picks that same token at 23 of 38 positions once the last three
