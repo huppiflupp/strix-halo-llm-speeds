@@ -5,7 +5,7 @@ tokens per second. Consolidated from five separate measurement logs (see [Source
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
-**Period:** August – 28 September 2026.
+**Period:** August – 29 September 2026.
 
 > **Read this first.** The numbers come from different harnesses and are **not** a ranking
 > to the decimal. The *How* column says which one produced a figure; the legend is
@@ -49,17 +49,18 @@ engine column says NPU or CPU.
 | 25 | DeepSeek-V4-Flash-0731 | 284B MoE, 13B active | UD-IQ2_XXS, 85 GiB | llama.cpp fork, Vulkan + DSpark draft n=3 | **28.9** | 262 | D |
 | 26 | Qwen3.8-27B Heretic (DavidAU finetune) | 27B dense | MTP-Q4_K_M, 18.5 GB | llama.cpp fork, Vulkan + MTP | **28.3** | 242 | D |
 | 27 | gemma4:12b | 12B dense | Q4_K_M, 7.4 GB | llama.cpp Vulkan | **25.6** | 741 | C |
-| 28 | NousResearch Hermes-4-14B | 14B dense | Q4_K_M, 9.0 GB | llama.cpp Vulkan | **23.5** | 695 | C |
-| 29 | gemma4:26b-a4b-it-bf16 | 26B MoE, 4B active | F16, 51.7 GB | Ollama | **21.1** | — | A |
-| 30 | gpt-oss-20b-FLM | 20B MoE, ~3.6B active | 14 GB | FastFlowLM on the **NPU** | **19.3** | 22–26 | A |
-| 31 | phi4-reasoning:plus | 14B dense | 11 GB | Ollama | **18.1** | — | B |
-| 32 | Qwen3.5-122B-A10B | 122B MoE, 10B active | MXFP4, 65 GB | llama.cpp Vulkan | **14.3** | — | B |
-| 33 | muse-glimmer | 30B dense | Q4_K_M, 16.7 GB | llama.cpp Vulkan | **12.4** | 357 | C |
-| 34 | gemma4:31b | 31B dense | Q4_K_M, 19.9 GB | Ollama | **9.7** | — | A |
-| 35 | llama3.1:70b | 70B dense | 43 GB | Ollama | **5.6** | — | B |
-| 36 | nemotron | MoE | 43 GB | Ollama | **5.3** | — | B |
-| 37 | DeepSeek-V4 REAP (pruned) | MoE | 79 GiB | colibri | **2.19** | — | E |
-| 38 | GLM-5.2 | 744B MoE | int4, 400 GiB | colibri, experts streamed from NVMe | **1.29** (0.26–1.71) | — | E |
+| 28 | GLM-5.3-Flash | 313B MoE, 17B active | UD-IQ1_S, 86.7 GiB | llama.cpp Vulkan (unsloth `glm5next`) + MTP n=2 | **25.0** (22.3–27.4) | 145 | D |
+| 29 | NousResearch Hermes-4-14B | 14B dense | Q4_K_M, 9.0 GB | llama.cpp Vulkan | **23.5** | 695 | C |
+| 30 | gemma4:26b-a4b-it-bf16 | 26B MoE, 4B active | F16, 51.7 GB | Ollama | **21.1** | — | A |
+| 31 | gpt-oss-20b-FLM | 20B MoE, ~3.6B active | 14 GB | FastFlowLM on the **NPU** | **19.3** | 22–26 | A |
+| 32 | phi4-reasoning:plus | 14B dense | 11 GB | Ollama | **18.1** | — | B |
+| 33 | Qwen3.5-122B-A10B | 122B MoE, 10B active | MXFP4, 65 GB | llama.cpp Vulkan | **14.3** | — | B |
+| 34 | muse-glimmer | 30B dense | Q4_K_M, 16.7 GB | llama.cpp Vulkan | **12.4** | 357 | C |
+| 35 | gemma4:31b | 31B dense | Q4_K_M, 19.9 GB | Ollama | **9.7** | — | A |
+| 36 | llama3.1:70b | 70B dense | 43 GB | Ollama | **5.6** | — | B |
+| 37 | nemotron | MoE | 43 GB | Ollama | **5.3** | — | B |
+| 38 | DeepSeek-V4 REAP (pruned) | MoE | 79 GiB | colibri | **2.19** | — | E |
+| 39 | GLM-5.2 | 744B MoE | int4, 400 GiB | colibri, experts streamed from NVMe | **1.29** (0.26–1.71) | — | E |
 
 Generation speed is memory-bound on this machine: what counts is how many bytes are read
 per token, not the parameter count in the name. Every model above 40 tok/s is either small
@@ -70,7 +71,6 @@ per token, not the parameter count in the name. Every model above 40 tok/s is ei
 
 | Model | Size | What happened |
 |---|---|---|
-| **GLM-5.3-Flash** (`unsloth/GLM-5.3-Flash-GGUF`, UD-IQ1_S) | 93 GB | Downloaded 2026-09-21. The one `llama-bench` attempt **failed at load**: the architecture `glm5next` existed only in open llama.cpp PRs (#27752, #27754, #27773) at the time. **Never measured.** |
 | Ling-2.6-flash (IQ4_NL) | 65 GB, 104B MoE | Ollama answered every request with HTTP 500; its architecture `bailing_hybrid` is not supported by the bundled llama.cpp. Never loaded. |
 | qwen3.8:27b-mxfp8 | 32 GB | Ollama: "this model requires MLX support" — Apple only. |
 | Qwen3-VL-235B-A22B-Instruct | ~133 GB at Q4_K_M | Larger than the machine's memory. Not downloaded. |
@@ -131,6 +131,27 @@ The Heretic finetune (row 26) measured 28.3 / 18.1 tok/s with MTP on llama.cpp 1
 | colibri, CPU | FP8 checkpoint (185.6 GB), expert cache 256 / 128 per layer | 6.9–7.5 / 5.8–6.8 | 09-28 |
 
 Occupies 90–94 GiB when loaded. It only runs alone.
+
+Greedy output with MTP differs from greedy output without it (from token 15–53 on). Checked on
+2026-09-29 token by token: at every divergence the MTP token is the target model's close second
+choice, and the target model alone picks that same token at 23 of 38 positions once the last three
+tokens run as one batch, as in MTP verification. The divergence is batch-dependent rounding in
+Vulkan, not an MTP defect.
+
+### GLM-5.3-Flash (UD-IQ1_S)
+
+| Engine | Configuration | Generation tok/s | Prompt tok/s | Date |
+|---|---|---:|---:|---|
+| llama.cpp Vulkan, unsloth branch `glm5next/upstream` (86ebfef2c) | built-in MTP, draft length 2; poem / explanation / C code | 22.3 / 25.3 / 27.4 | — | 09-29 |
+| same build | no MTP, `llama-server`, 3 prompts | 17.0–17.1 | — | 09-29 |
+| same build | `llama-bench` pp512 / tg128 | 17.63 | 145.0 | 09-29 |
+| same build | `llama-bench` at depth 4096 | 15.46 | 131.5 | 09-29 |
+
+Needs `-fa off` (PR #27754; the MLA latent is cast to F16). Wikitext perplexity 4.49 (4 chunks of 2048,
+GPU). Occupies 89 GiB loaded, 95 GiB with MTP, so it only runs alone; the larger quants
+(UD-Q2_K_XL 109 GB, UD-IQ3_XXS 120 GB) exceed what this machine can hold. MTP acceptance 54–80 %.
+For comparison, unsloth reports 86.5 tok/s with MTP on one B200. The first load attempt on
+2026-09-21 failed because the architecture was not yet in the build.
 
 ### DeepSeek-V4-Flash-0731
 
@@ -244,4 +265,4 @@ Caveats that apply to the whole list:
 | ai395-setup (private) | `bench/MODELLE.md`, candidate run, colibri and Qwen3.8 measurements |
 | strix-halo-kernel-lab (private) | lab book, `docs/GAINS.md`, the GLM-5.3-Flash load failure (E039) |
 
-Last consolidated: 2026-09-29.
+Last consolidated: 2026-09-29 (GLM-5.3-Flash added the same day).
