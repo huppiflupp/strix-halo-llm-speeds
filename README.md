@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 39 models with a measured speed, 164 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 39 models with a measured speed, 165 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -183,11 +183,12 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-Flash-Next</b> — 6 measurements, 6.3 to 41.3 tok/s</summary>
+<summary><b>Qwen3.8-Flash-Next</b> — 7 measurements, 6.3 to 41.3 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2 | UD-IQ4_XS, 93.7 GB | 41.3 | — | D | 2026-09-28 | occupies 94 GiB, runs only alone |
+| llama.cpp (PR #28243) | Vulkan, MTP draft length 2, full context 262144 | UD-IQ4_XS, 93.7 GB | 40.67 | — | D | 2026-09-29 | one prompt; 78.2 GiB GTT + 27.1 GiB host RAM |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 3 | UD-IQ4_XS, 93.7 GB | 40.6 | — | D | 2026-09-28 | — |
 | llama.cpp (PR #28243) | Vulkan, no MTP | UD-IQ4_XS, 93.7 GB | 26.85 | — | D | 2026-09-28 | — |
 | llama.cpp (strix fork 10707) | Vulkan, no MTP | UD-IQ4_XS, 93.7 GB | 26.5 | — | D | 2026-09-16 | — |
@@ -356,7 +357,7 @@ at `-ub 512`; master 6.3124 and master + #25666 6.3154 at `-ub 4`. Qwen3-30B: 6.
 None of the new paths computes wrongly.
 
 **Qwen3.8-Flash-Next.** Occupies 90–94 GiB when loaded and only runs alone. With the full 262,144-token context and MTP it still fits alone: 78.2 GiB GTT plus 27.1 GiB host RAM,
-about 10 GiB left (probe 2026-09-29, 40.7 tok/s in the smoke test); a second 262k slot does not fit. Greedy output
+about 10 GiB left (probe 2026-09-29); a second 262k slot does not fit. Greedy output
 with MTP differs from greedy output without it (from token 15–53 on). Checked on 2026-09-29
 token by token: at every divergence the MTP token is the target model's close second choice,
 and the target model alone picks that same token at 23 of 38 positions once the last three

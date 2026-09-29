@@ -88,6 +88,7 @@ Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,llama.cpp (stri
 Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,llama.cpp (strix fork 10707),iGPU,"Vulkan, MTP off, 400 tokens",11.2,,348,,D,2026-09-16,0,
 Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,Ollama 0.34.1,iGPU,"MTP off, 400 tokens",10.9,,281,,D,2026-09-16,0,
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 2",41.3,,,,D,2026-09-28,1,"occupies 94 GiB, runs only alone"
+Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 2, full context 262144",40.67,,,,D,2026-09-29,0,"one prompt; 78.2 GiB GTT + 27.1 GiB host RAM"
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 3",40.6,,,,D,2026-09-28,0,
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, no MTP",26.85,,,,D,2026-09-28,0,
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (strix fork 10707),iGPU,"Vulkan, no MTP",26.5,,,,D,2026-09-16,0,
