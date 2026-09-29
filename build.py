@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""Generate README.md and index.html from models.csv.
+
+models.csv is the only place where numbers are entered. Run this after every change:
+
+    python3 build.py
+"""
+import csv
+import datetime
+import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+NUMERIC = ("size_gb", "gen_tok_s", "prompt_tok_s")
+
+
+def load():
+    with open(ROOT / "models.csv", newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    for n, r in enumerate(rows, start=2):
+        for k in NUMERIC:
+            try:
+                r[k] = float(r[k]) if r[k].strip() else None
+            except ValueError:
+                sys.exit(f"models.csv line {n}: {k} is not a number: {r[k]!r}")
+        r["best"] = r["best"].strip() == "1"
+    check(rows)
+    return rows
+
+
+def check(rows):
+    best = {}
+    for r in rows:
+        best[r["model"]] = best.get(r["model"], 0) + r["best"]
+    wrong = sorted(m for m, n in best.items() if n != 1)
+    if wrong:
+        sys.exit("models.csv: exactly one row per model needs best=1, check: " + ", ".join(wrong))
+    for r in rows:
+        if r["gen_tok_s"] is not None and not r["how"]:
+            sys.exit(f"models.csv: {r['model']} has a speed but no harness code in 'how'")
+
+
+def num(v):
+    """Shortest sensible notation: 97 instead of 97.0, 53.7 stays 53.7."""
+    if v is None:
+        return ""
+    return f"{v:.2f}".rstrip("0").rstrip(".")
+
+
+def cell(text):
+    return str(text).replace("|", "\\|") if text else "—"
+
+
+def speed(r, key, text):
+    return r[text] or num(r[key]) or "—"
+
+
+def quant_size(r):
+    size = f"{num(r['size_gb'])} GB" if r["size_gb"] is not None else ""
+    return ", ".join(x for x in (r["quant"], size) if x)
+
+
+def engine(r):
+    e = r["engine"]
+    if r["runs_on"] and r["runs_on"] != "iGPU":
+        e = f"{e} on the **{r['runs_on']}**" if e else r["runs_on"]
+    return e
+
+
+def table(header, lines):
+    align = "|" + "|".join("---:" if h.endswith(" tok/s") or h == "#" else "---" for h in header) + "|"
+    return "\n".join(["| " + " | ".join(header) + " |", align] + lines)
+
+
+def by_speed(rows):
+    return sorted(rows, key=lambda r: -r["gen_tok_s"])
+
+
+def main_list(rows):
+    best = by_speed(r for r in rows if r["best"] and r["gen_tok_s"] is not None)
+    lines = []
+    for i, r in enumerate(best, start=1):
+        eng = ", ".join(x for x in (engine(r), r["config"]) if x)
+        lines.append("| " + " | ".join([
+            str(i), cell(r["model"]), cell(r["architecture"]), cell(quant_size(r)), cell(eng),
+            f"**{speed(r, 'gen_tok_s', 'gen_text')}**", speed(r, "prompt_tok_s", "prompt_text"), r["how"],
+        ]) + " |")
+    header = ["#", "Model", "Architecture", "Quant, file size", "Engine, configuration",
+              "Generation tok/s", "Prompt tok/s", "How"]
+    return table(header, lines)
+
+
+def no_number(rows):
+    lines = []
+    for r in rows:
+        if r["gen_tok_s"] is None:
+            lines.append("| " + " | ".join([
+                f"**{cell(r['model'])}**", cell(r["architecture"]), cell(quant_size(r)), cell(r["note"]),
+            ]) + " |")
+    return table(["Model", "Architecture", "Quant, file size", "What happened"], lines)
+
+
+def variants(rows):
+    groups = {}
+    for r in rows:
+        if r["gen_tok_s"] is not None:
+            groups.setdefault(r["model"], []).append(r)
+    groups = {m: g for m, g in groups.items() if len(g) > 1}
+    order = sorted(groups, key=lambda m: -max(r["gen_tok_s"] for r in groups[m]))
+    out = []
+    for m in order:
+        g = by_speed(groups[m])
+        lines = []
+        for r in g:
+            lines.append("| " + " | ".join([
+                cell(engine(r)), cell(r["config"]), cell(quant_size(r)),
+                speed(r, "gen_tok_s", "gen_text"), speed(r, "prompt_tok_s", "prompt_text"),
+                r["how"], cell(r["date"]), cell(r["note"]),
+            ]) + " |")
+        header = ["Engine", "Configuration", "Quant, file size", "Generation tok/s",
+                  "Prompt tok/s", "How", "Date", "Note"]
+        lo, hi = num(g[-1]["gen_tok_s"]), num(g[0]["gen_tok_s"])
+        out.append(
+            f"<details>\n<summary><b>{m}</b> — {len(g)} measurements, {lo} to {hi} tok/s</summary>\n\n"
+            + table(header, lines) + "\n\n</details>"
+        )
+    return "\n\n".join(out)
+
+
+def summary(rows):
+    measured = sum(1 for r in rows if r["best"] and r["gen_tok_s"] is not None)
+    none = sum(1 for r in rows if r["gen_tok_s"] is None)
+    total = sum(1 for r in rows if r["gen_tok_s"] is not None)
+    return (f"{measured} models with a measured speed, {total} single measurements, "
+            f"and {none} models that were tried without producing a number.")
+
+
+def main():
+    rows = load()
+    built = datetime.date.today().isoformat()
+
+    readme = (ROOT / "README.template.md").read_text(encoding="utf-8")
+    note = ("<!-- Generated by build.py from models.csv and README.template.md. "
+            "Do not edit this file by hand. -->\n\n")
+    for key, value in {
+        "{{SUMMARY}}": summary(rows),
+        "{{LIST}}": main_list(rows),
+        "{{NO_NUMBER}}": no_number(rows),
+        "{{VARIANTS}}": variants(rows),
+        "{{BUILT}}": built,
+    }.items():
+        readme = readme.replace(key, value)
+    (ROOT / "README.md").write_text(note + readme, encoding="utf-8")
+
+    data = json.dumps(rows, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    page = (ROOT / "template.html").read_text(encoding="utf-8")
+    page = page.replace("__SUMMARY__", summary(rows)).replace("__BUILT__", built)
+    page = page.replace("__DATA__", data)
+    (ROOT / "index.html").write_text(page, encoding="utf-8")
+
+    print(f"README.md and index.html written: {summary(rows)}")
+
+
+if __name__ == "__main__":
+    main()

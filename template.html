@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM speeds on AMD Strix Halo</title>
+<meta name="description" content="Every language model measured on one AMD Ryzen AI MAX+ 395 with 128 GB: generation and prompt speed in tokens per second, sortable.">
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1c1d1f; --muted: #62656b; --line: #dcdad3;
+  --accent: #b3401c; --head: #efede7; --best: #1c1d1f; --chip: #ebe9e2;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15161a; --panel: #1c1e23; --ink: #e9e7e1; --muted: #9a9ca3; --line: #30333a;
+    --accent: #ff8a5c; --head: #23262c; --best: #ffffff; --chip: #2a2d34;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 1500px; margin: 0 auto; padding: 28px 16px 56px; }
+h1 { font-size: 1.7rem; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; }
+h2 { font-size: 1.05rem; margin: 36px 0 10px; }
+p { margin: 0 0 10px; max-width: 78ch; }
+.lede { color: var(--muted); }
+a { color: var(--accent); }
+code { font: 0.9em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+.controls {
+  display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center;
+  margin: 22px 0 10px;
+}
+.controls input[type=search] {
+  flex: 1 1 260px; max-width: 420px; padding: 8px 10px; font: inherit;
+  color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+}
+.controls label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.controls select {
+  font: inherit; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px;
+}
+#count { color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
+
+.wrap {
+  overflow-x: auto; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 8px;
+}
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 7px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+tbody tr:last-child td { border-bottom: 0; }
+thead th {
+  background: var(--head); padding: 0; white-space: nowrap; border-bottom: 1px solid var(--line);
+}
+thead button {
+  all: unset; box-sizing: border-box; display: block; width: 100%;
+  padding: 9px 10px; cursor: pointer; font-weight: 600; font-size: 13px;
+}
+thead button:hover { color: var(--accent); }
+thead button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+thead button::after { content: " ↕"; color: var(--muted); font-weight: 400; }
+th[aria-sort=ascending] button::after { content: " ↑"; color: var(--accent); }
+th[aria-sort=descending] button::after { content: " ↓"; color: var(--accent); }
+th.num button, td.num { text-align: right; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.model {
+  font-weight: 600; min-width: 13rem;
+  position: sticky; left: 0; z-index: 1; background: var(--panel); box-shadow: 1px 0 0 var(--line);
+}
+thead th:first-child { position: sticky; left: 0; z-index: 2; box-shadow: 1px 0 0 var(--line); }
+td.arch { min-width: 9rem; }
+td.config { min-width: 15rem; }
+td.note { min-width: 17rem; color: var(--muted); }
+td.nowrap { white-space: nowrap; }
+td.gen { position: relative; font-weight: 600; min-width: 7.5rem; padding-bottom: 11px; }
+td.gen .bar {
+  position: absolute; left: 10px; bottom: 5px; height: 3px; border-radius: 2px;
+  background: var(--accent); max-width: calc(100% - 20px);
+}
+tr.variant td.model { font-weight: 400; color: var(--muted); }
+tr.none td.gen { font-weight: 400; color: var(--muted); }
+.how {
+  display: inline-block; min-width: 1.5em; text-align: center; padding: 0 5px;
+  border-radius: 4px; background: var(--chip); font-weight: 600; font-size: 12px;
+}
+@media (max-width: 640px) {
+  td.model { min-width: 9.5rem; max-width: 9.5rem; overflow-wrap: anywhere; }
+}
+.empty { padding: 28px 12px; text-align: center; color: var(--muted); }
+
+dl.legend { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; max-width: 90ch; }
+dl.legend dt { font-weight: 600; }
+dl.legend dd { margin: 0; color: var(--muted); }
+ul.caveats { padding-left: 1.2em; margin: 0; max-width: 90ch; }
+ul.caveats li { margin-bottom: 5px; }
+footer { margin-top: 36px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>LLM speeds on AMD Strix Halo</h1>
+  <p class="lede">Every language model measured on one machine: AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151)
+  and XDNA2 NPU, 128 GB unified memory, Nobara Linux 44. __SUMMARY__</p>
+  <p>Click a column header to sort. The numbers come from different harnesses and are not a ranking to the
+  decimal — see <a href="#how">how they were measured</a>.</p>
+
+  <div class="controls">
+    <input id="q" type="search" placeholder="Search model, engine, quant, note …" aria-label="Search the table">
+    <label><input id="bestOnly" type="checkbox" checked> Best result per model only</label>
+    <label>Runs on
+      <select id="device" aria-label="Filter by device">
+        <option value="">anything</option>
+        <option>iGPU</option>
+        <option>NPU</option>
+        <option>CPU</option>
+      </select>
+    </label>
+    <span id="count" role="status"></span>
+  </div>
+
+  <div class="wrap">
+    <table>
+      <thead><tr id="head"></tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+    <div id="empty" class="empty" hidden>No row matches. That model was probably never tried on this machine.</div>
+  </div>
+
+  <h2 id="how">How the numbers were measured</h2>
+  <dl class="legend">
+    <dt><span class="how">A</span></dt><dd>Smoke test through Ollama and Lemonade, 2026-09-15: six short German tasks, 400-token output cap, one run per model.</dd>
+    <dt><span class="how">B</span></dt><dd>Candidate run, 2026-09-16: the same six tasks, 2000-token cap, thinking switched off.</dd>
+    <dt><span class="how">C</span></dt><dd><code>llama-bench</code>, <code>-ngl 999 -p 512 -n 128</code> unless the configuration says otherwise, 2–3 repetitions.</dd>
+    <dt><span class="how">D</span></dt><dd><code>llama-server</code> or the running service, fixed prompts, median or mean; with speculative decoding where stated.</dd>
+    <dt><span class="how">E</span></dt><dd>colibri, decode speed as reported by the engine.</dd>
+  </dl>
+
+  <h2>Caveats</h2>
+  <ul class="caveats">
+    <li>A and B are single runs and good for orders of magnitude only.</li>
+    <li>Speculative decoding (MTP, DSpark, EAGLE3) depends on the text; code and prose give different acceptance rates.</li>
+    <li>Prompt speed depends on prompt length and micro-batch. Compare it only within one model.</li>
+    <li>August HIP (ROCm) figures come from a build that computed wrong results on gfx1151. The speed was the same as that of the corrected build.</li>
+    <li>The list says nothing about answer quality.</li>
+  </ul>
+
+  <footer>
+    Data: <a href="models.csv">models.csv</a> ·
+    Source and details: <a href="https://github.com/huppiflupp/strix-halo-llm-speeds">github.com/huppiflupp/strix-halo-llm-speeds</a> ·
+    Last built __BUILT__
+  </footer>
+</main>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function () {
+  "use strict";
+  var rows = JSON.parse(document.getElementById("data").textContent);
+  var cols = [
+    { key: "model", label: "Model", cls: "model" },
+    { key: "gen_tok_s", label: "Generation tok/s", num: true, text: "gen_text", cls: "gen" },
+    { key: "prompt_tok_s", label: "Prompt tok/s", num: true, text: "prompt_text" },
+    { key: "architecture", label: "Architecture", cls: "arch" },
+    { key: "quant", label: "Quant", cls: "nowrap" },
+    { key: "size_gb", label: "Size GB", num: true },
+    { key: "engine", label: "Engine" },
+    { key: "runs_on", label: "Runs on", cls: "nowrap" },
+    { key: "config", label: "Configuration", cls: "config" },
+    { key: "how", label: "How" },
+    { key: "date", label: "Date", cls: "nowrap" },
+    { key: "note", label: "Note", cls: "note" }
+  ];
+  var sortKey = "gen_tok_s", sortDir = -1;
+  var maxGen = Math.max.apply(null, rows.map(function (r) { return r.gen_tok_s || 0; }));
+  var head = document.getElementById("head"), body = document.getElementById("body");
+  var q = document.getElementById("q"), bestOnly = document.getElementById("bestOnly");
+  var device = document.getElementById("device"), count = document.getElementById("count");
+  var empty = document.getElementById("empty");
+
+  rows.forEach(function (r) {
+    r._hay = cols.map(function (c) { return r[c.key] == null ? "" : String(r[c.key]); })
+      .join(" ").toLowerCase();
+  });
+
+  cols.forEach(function (c) {
+    var th = document.createElement("th");
+    th.scope = "col";
+    if (c.num) th.className = "num";
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = c.label;
+    b.addEventListener("click", function () {
+      if (sortKey === c.key) sortDir = -sortDir;
+      else { sortKey = c.key; sortDir = c.num ? -1 : 1; }
+      render();
+    });
+    th.appendChild(b);
+    c.th = th;
+    head.appendChild(th);
+  });
+
+  function blank(v) { return v === null || v === undefined || v === ""; }
+
+  function compare(a, b) {
+    var x = a[sortKey], y = b[sortKey];
+    var bx = blank(x), by = blank(y);
+    if (bx || by) return bx && by ? 0 : (bx ? 1 : -1);   // blanks always last
+    var d = (typeof x === "number" && typeof y === "number")
+      ? x - y
+      : String(x).localeCompare(String(y), "en", { numeric: true, sensitivity: "base" });
+    return d * sortDir;
+  }
+
+  function fmt(n) {
+    if (blank(n)) return "";
+    return (Math.round(n * 100) / 100).toLocaleString("en-US", { maximumFractionDigits: 2 });
+  }
+
+  function render() {
+    var words = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    var dev = device.value;
+    var shown = rows.filter(function (r) {
+      if (bestOnly.checked && !r.best) return false;
+      if (dev && String(r.runs_on).indexOf(dev) === -1) return false;
+      return words.every(function (w) { return r._hay.indexOf(w) !== -1; });
+    });
+    shown = shown.map(function (r, i) { return [r, i]; })
+      .sort(function (a, b) { return compare(a[0], b[0]) || a[1] - b[1]; })
+      .map(function (p) { return p[0]; });
+
+    cols.forEach(function (c) {
+      if (c.key === sortKey) c.th.setAttribute("aria-sort", sortDir > 0 ? "ascending" : "descending");
+      else c.th.removeAttribute("aria-sort");
+    });
+
+    var frag = document.createDocumentFragment();
+    shown.forEach(function (r) {
+      var tr = document.createElement("tr");
+      if (!r.best) tr.className = "variant";
+      if (blank(r.gen_tok_s)) tr.className = "none";
+      cols.forEach(function (c) {
+        var td = document.createElement("td");
+        var cls = [];
+        if (c.num) cls.push("num");
+        if (c.cls) cls.push(c.cls);
+        td.className = cls.join(" ");
+        var v = r[c.key];
+        if (c.key === "gen_tok_s") {
+          if (blank(v)) {
+            td.textContent = "no number";
+          } else {
+            var bar = document.createElement("div");
+            bar.className = "bar";
+            bar.style.width = "calc(" + Math.max(1, v / maxGen * 100) + "% - 20px)";
+            bar.style.minWidth = "3px";
+            var s = document.createElement("span");
+            s.textContent = r.gen_text || fmt(v);
+            td.appendChild(bar);
+            td.appendChild(s);
+          }
+        } else if (c.key === "how") {
+          if (!blank(v)) {
+            var chip = document.createElement("span");
+            chip.className = "how";
+            chip.textContent = v;
+            td.appendChild(chip);
+          }
+        } else if (c.num) {
+          td.textContent = (c.text && r[c.text]) ? r[c.text] : fmt(v);
+        } else {
+          td.textContent = blank(v) ? "" : v;
+        }
+        tr.appendChild(td);
+      });
+      frag.appendChild(tr);
+    });
+    body.textContent = "";
+    body.appendChild(frag);
+    empty.hidden = shown.length > 0;
+    var models = {};
+    shown.forEach(function (r) { models[r.model] = 1; });
+    count.textContent = shown.length + " of " + rows.length + " rows · " +
+      Object.keys(models).length + " models";
+  }
+
+  q.addEventListener("input", render);
+  bestOnly.addEventListener("change", render);
+  device.addEventListener("change", render);
+  render();
+})();
+</script>
+</body>
+</html>

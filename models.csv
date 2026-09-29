@@ -1,0 +1,170 @@
+model,architecture,quant,size_gb,engine,runs_on,config,gen_tok_s,gen_text,prompt_tok_s,prompt_text,how,date,best,note
+qwen3:0.6b,0.75B dense,,0.5,Ollama,iGPU,,236.6,,,,B,2026-09-16,1,"rarely calls tools, invents answers"
+llama3.2:1b-instruct-q4_0,1B dense,Q4_0,0.77,Ollama,iGPU,,202.3,,,,B,2026-09-16,1,fails as soon as two tools are offered
+fableforge-ai/nexus-medical,small domain model,,3.1,Ollama,iGPU,,147.5,,,,B,2026-09-16,1,usable in English only
+fableforge-ai/nexus-science,small domain model,,3.1,Ollama,iGPU,,145.7,,,,B,2026-09-16,1,usable in English only
+llama3.2:1b,1B dense,,1.3,Ollama,iGPU,,135.1,,,,B,2026-09-16,1,
+qwen3:1.7b,2B dense,,1.4,Ollama,iGPU,,128.5,,,,B,2026-09-16,1,
+llama3.2:3b,3.2B dense,,2.0,Ollama,iGPU,,84.7,,,,B,2026-09-16,1,
+granite4.2:3b,3.7B dense,,2.3,Ollama,iGPU,,74.9,,,,B,2026-09-16,1,
+Ornith-1.5-35B-A3B,"35B MoE, 3B active",Q4_K_M,21.7,Ollama,iGPU,,60.0,,,,B,2026-09-16,1,
+qwen3-coder-next,"80B MoE, 3B active",,52,Ollama,iGPU,,51.1,,,,B,2026-09-16,1,
+nex-agi Nex-N2.5-mini,35B MoE,Q4_K_M,21.3,Ollama,iGPU,,50.8,,,,B,2026-09-16,1,
+qwen3-next,"80B MoE, 3B active",,50,Ollama,iGPU,,45.1,,,,B,2026-09-16,1,
+granite4.2,8B dense,,5.3,Ollama,iGPU,,40.4,,,,B,2026-09-16,1,
+phi4-reasoning:plus,14B dense,,11,Ollama,iGPU,,18.1,,,,B,2026-09-16,1,median wait 110 s per answer
+Qwen3.5-122B-A10B,"122B MoE, 10B active",MXFP4,65,llama.cpp,iGPU,"Vulkan, llama-server",14.3,,,,B,2026-09-16,1,occupies 74 GB when loaded
+llama3.1:70b,70B dense,,43,Ollama,iGPU,,5.6,,,,B,2026-09-16,1,
+nemotron,MoE,,43,Ollama,iGPU,,5.3,,,,B,2026-09-16,1,
+gemma4:e2b,,Q4_K_M,7.2,Ollama,iGPU,,82.0,,,,A,2026-09-15,1,
+qwen3-vl:30b,30B,Q4_K_M,19.6,Ollama,iGPU,,64.5,,,,A,2026-09-15,1,45 GB in use when loaded
+DeepSeek-Qwen3-8B,8B,Q4_1,4.9,Lemonade (llama.cpp),iGPU,Vulkan,40.6,,,,A,2026-09-15,1,
+qwen3-vl:8b-instruct,8B,Q4_K_M,6.1,Ollama,iGPU,,37.3,,,,A,2026-09-15,1,44 GB in use when loaded (262k context)
+qwen3.5:9b,9B,Q4_K_M,6.6,Ollama,iGPU,,31.5,,,,A,2026-09-15,1,
+gemma4:26b-a4b-it-bf16,"26B MoE, 4B active",F16,51.7,Ollama,iGPU,,21.1,,,,A,2026-09-15,1,the only unquantised model in the set
+gemma4:31b,31B dense,Q4_K_M,19.9,Ollama,iGPU,,9.7,,,,A,2026-09-15,1,
+Gemma-4-E4B-it,4B active,Q4_K_M,5.6,Lemonade (llama.cpp),iGPU,Vulkan,56.8,,,,A,2026-09-15,1,
+Gemma-4-E4B-it,4B active,Q4_K_M,5.6,Lemonade (llama.cpp),iGPU,"Vulkan, first comparison with the NPU",53.6,,235,62–235,D,2026-08-16,0,
+Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,kernel's own amdxdna driver,12.37,,20.6,,D,2026-09-15,0,
+Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,DKMS driver build of 2026-08-16,12.0,,26.9,15.9–26.9,D,2026-08-16,0,
+Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,DKMS driver build of 2026-09-15,11.81,,20.4,,D,2026-09-15,0,
+Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,smoke test,10.1,,,,A,2026-09-15,0,scored 4/6 where the iGPU run scored 6/6
+gpt-oss-20b-FLM,"21B MoE, ~3.6B active",,14,FastFlowLM,NPU,first run,19.3,,26.3,21.8–26.3,D,2026-08-16,1,
+gpt-oss-20b-FLM,"21B MoE, ~3.6B active",,14,FastFlowLM,NPU,smoke test,16.2,,,,A,2026-09-15,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build),iGPU,"Vulkan, with MTP, family chat service",97,≈ 97,1839,,D,2026-09-22,1,"prompt: 2048 tokens, empty context"
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork),iGPU,"Vulkan, with MTP",89.8,,1610,,D,2026-09-18,0,"prompt figure from 2026-09-21, 2048 tokens"
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork 10565),iGPU,"Vulkan, MTP draft length 1",77.8,,,,D,2026-09-18,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork 10565),iGPU,"Vulkan, MTP draft length 2",81.9,,,,D,2026-09-18,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork 10565),iGPU,"Vulkan, MTP draft length 3",80.2,,,,D,2026-09-18,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork 10565),iGPU,"Vulkan, MTP draft length 4",78.6,,,,D,2026-09-18,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork 10565),iGPU,"Vulkan, MTP off",61.7,,,,D,2026-09-18,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",int4,22,colibri fork (branch decode-gpu),iGPU,"own GPU decode, with MTP",77.3,,,,E,2026-09-28,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",int4,22,colibri fork (branch decode-gpu),iGPU,"own GPU decode, no MTP",66.9,,,,E,2026-09-28,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp master bfdc321,iGPU,"Vulkan, llama-bench tg200 / pp4096",63.07,,1037.4,,C,2026-09-14,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (frozen build),iGPU,"Vulkan, no MTP, llama-bench tg256 / pp512",62.7,,1461,,C,2026-09-26,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp 9731ad3,iGPU,"Vulkan, llama-bench tg200 / pp4096",62.23,,982.8,,C,2026-08,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",Q4_K_M,23.9,Ollama,iGPU,qwen3.6:latest,54.5,,,,A,2026-09-15,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",Q4_K_M,23.9,Ollama,iGPU,qwen3.6-en,54.0,,,,A,2026-09-15,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp master bfdc321,iGPU,"HIP (ROCm), llama-bench tg200 / pp4096",50.36,,966.9,,C,2026-09-14,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp 9731ad3,iGPU,"HIP (ROCm), llama-bench tg200 / pp4096",49.95,,965.3,,C,2026-08,0,August HIP build computed wrong results on gfx1151 (found 2026-09-14); speed only
+Qwen3.6-35B-A3B,"35B MoE, 3B active",int4,22,colibri (PR #1338),iGPU,"Vulkan expert tier, all experts on the GPU",31.6,,,,E,2026-09-26,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",int4,22,colibri,CPU,"CPU only, 16 threads",19.8,,,,E,2026-09-26,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",int4,22,colibri,CPU,CPU only,19.7,,,,E,2026-09-14,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",,35,FastFlowLM,NPU,"qwen3.6-moe-35b-a3b-FLM, first run",13.4,,6.9,,D,2026-08-16,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",int4,22,colibri,iGPU,HIP expert tier,12.35,,,,E,2026-09-14,0,37 % slower than CPU only
+Qwen3.6-35B-A3B,"35B MoE, 3B active",,35,FastFlowLM,NPU,"qwen3.6-moe-35b-a3b-FLM, smoke test",10.2,,,,A,2026-09-15,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp master c85b92c69,iGPU,"Vulkan, llama-bench tg128 / pp512",63.15,,1402,,C,2026-09-29,0,"new IQ4_XS kernels, no lab patches; with PR #29182 (MoE tile selection) pp512 drops to 1337"
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build),iGPU,"Vulkan, llama-bench tg128 / pp512",62.96,,1460,,C,2026-09-29,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp master c85b92c69 + PR #25666,iGPU,"Vulkan, with MTP, greedy, C code",100.5,,,,D,2026-09-29,0,"PR #25666: no MMVQ on spec-decode steps; one prompt, not a mean"
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp master c85b92c69 + PR #25666,iGPU,"Vulkan, with MTP, greedy, explanation",91.5,,,,D,2026-09-29,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp master c85b92c69 + PR #25666,iGPU,"Vulkan, with MTP, greedy, poem",58.6,,,,D,2026-09-29,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp master c85b92c69,iGPU,"Vulkan, with MTP, greedy, explanation",91.7,,,,D,2026-09-29,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp master c85b92c69,iGPU,"Vulkan, with MTP, greedy, C code",91.6,,,,D,2026-09-29,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp master c85b92c69,iGPU,"Vulkan, with MTP, greedy, poem",61.3,,,,D,2026-09-29,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp (lab build),iGPU,"Vulkan, with MTP, coder service under agent load",33,30–36,478.9,,D,2026-09-22,1,occupies 76 GiB with the packed matmul copy; prompt: llama-bench -ub 512, a real 21.6 k-token agent request reads at 357 tok/s
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp (strix fork 10565),iGPU,"Vulkan, with MTP, 400 tokens",27.9,,244,,D,2026-09-16,0,
+Qwen3.8-27B,27B dense,Q4_K_M,17,Ollama,iGPU,"qwen3.8:27b with MTP, candidate run",25.3,,,,B,2026-09-16,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp (strix fork 10707),iGPU,"Vulkan, with MTP, 400 tokens",20.3,,341,,D,2026-09-16,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,Ollama 0.34.1,iGPU,"with MTP, 400 tokens",19.5,,288,,D,2026-09-16,0,
+Qwen3.8-27B,27B dense,Q4_K_M,17.7,Ollama,iGPU,"qwen3.8:latest, smoke test",18.2,,,,A,2026-09-15,0,
+Qwen3.8-27B,27B dense,Q4_K_M,17.7,Ollama,iGPU,"qwen3.8:latest, first run",15.9,,80.5,,D,2026-08-16,0,
+Qwen3.8-27B,27B dense,UD-IQ4_XS,,llama.cpp,iGPU,"Vulkan, no MTP",14.13,,391,,C,2026-09-28,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp,iGPU,"Vulkan, no MTP",12.36,,389,,C,2026-09-28,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp master bfdc321,iGPU,"Vulkan, llama-bench",12.29,,317.25,,C,2026-09-14,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp (strix fork 10565),iGPU,"Vulkan, MTP off, 400 tokens",12.1,,249,,D,2026-09-16,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp 9731ad3,iGPU,"Vulkan, llama-bench",12.09,,329.4,,C,2026-08,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp (strix fork 10707),iGPU,"Vulkan, MTP off, 400 tokens",12.0,,352,,D,2026-09-16,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,Ollama 0.34.1,iGPU,"MTP off, 400 tokens",11.9,,275,,D,2026-09-16,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp master bfdc321,iGPU,"HIP (ROCm), llama-bench",11.86,,315.77,,C,2026-09-14,0,
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp 9731ad3,iGPU,"HIP (ROCm), llama-bench",11.19,,320.6,,C,2026-08,0,August HIP build computed wrong results on gfx1151 (found 2026-09-14); speed only
+Qwen3.8-27B,27B dense,Q8_0,29,Ollama,iGPU,qwen3.8:27b-q8_0,7.3,,,,B,2026-09-16,0,
+Qwen3.8-27B,27B dense,int4,51,colibri (dev),CPU,"CPU only, 16 threads",6.93,,,,E,2026-09-28,0,"f16 container, quantised at load"
+Qwen3.8-27B,27B dense,Q4_K_M,16.8,llama.cpp,CPU,-ngl 0 -t 16,5.63,,,,C,2026-09-28,0,
+Qwen3.8-27B,27B dense,int8,51,colibri (dev),CPU,"CPU only, 16 threads",4.28,,,,E,2026-09-28,0,"f16 container, quantised at load"
+Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,llama.cpp (strix fork 10565),iGPU,"Vulkan, with MTP, 400 tokens",28.3,,242,,D,2026-09-16,1,
+Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,Ollama 0.34.1,iGPU,"with MTP, 400 tokens",18.6,,291,,D,2026-09-16,0,
+Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,llama.cpp (strix fork 10707),iGPU,"Vulkan, with MTP, 400 tokens",18.1,,342,,D,2026-09-16,0,
+Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,llama.cpp (strix fork 10565),iGPU,"Vulkan, MTP off, 400 tokens",11.2,,247,,D,2026-09-16,0,
+Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,llama.cpp (strix fork 10707),iGPU,"Vulkan, MTP off, 400 tokens",11.2,,348,,D,2026-09-16,0,
+Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,Ollama 0.34.1,iGPU,"MTP off, 400 tokens",10.9,,281,,D,2026-09-16,0,
+Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 2",41.3,,,,D,2026-09-28,1,"occupies 94 GiB, runs only alone"
+Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 3",40.6,,,,D,2026-09-28,0,
+Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, no MTP",26.85,,,,D,2026-09-28,0,
+Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (strix fork 10707),iGPU,"Vulkan, no MTP",26.5,,,,D,2026-09-16,0,
+Qwen3.8-Flash-Next,"125B MoE, 6B active",FP8,185.6,colibri (dev),CPU,"CPU, experts streamed from SSD, cache 256 per layer",7.2,6.9–7.5,,,E,2026-09-28,0,warm page cache
+Qwen3.8-Flash-Next,"125B MoE, 6B active",FP8,185.6,colibri (dev),CPU,"CPU, experts streamed from SSD, cache 128 per layer",6.3,5.8–6.8,,,E,2026-09-28,0,warm page cache
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ2_XXS,91,"llama.cpp (Nathanw1014 fork, source build)",iGPU,"Vulkan, DSpark draft n=3",28.91,,261.7,,D,2026-09-20,1,"perplexity 5.21 against 4.57 for IQ3; 108 of 124 GB in use, hung the GPU driver once"
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ2_XXS,91,"llama.cpp (Nathanw1014 fork, source build)",iGPU,"Vulkan, DSpark draft n=2",27.46,,253.5,,D,2026-09-20,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ2_XXS,91,"llama.cpp (Nathanw1014 fork, source build)",iGPU,"Vulkan, DSpark draft n=4",26.05,,251.6,,D,2026-09,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ2_XXS,91,"llama.cpp (Nathanw1014 fork, source build)",iGPU,"Vulkan, DSpark draft n=5",25.06,,252.7,,D,2026-09,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ2_XXS,91,"llama.cpp (Nathanw1014 fork, source build)",iGPU,"Vulkan, DSpark draft n=6",25.01,,249.6,,D,2026-09,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ2_XXS,91,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, DSpark draft n=2, first series",26.25,,,,D,2026-09-20,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ2_XXS,91,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, no draft",18.91,,225.7,,D,2026-09-20,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,"llama.cpp (Nathanw1014 fork, source build)",iGPU,"Vulkan, DSpark draft n=2",23.01,,201.5,,D,2026-09-20,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, DSpark draft n=2, first series",22.77,,,,D,2026-09-20,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, DSpark draft n=3, first series",20.53,,,,D,2026-09-20,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, DSpark draft n=1, first series",20.03,,,,D,2026-09-20,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, no draft",18.4,,206.5,,D,2026-09-20,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",ROCMFP2-STRIX,102.3,Lucebox dflash_server,iGPU,"HIP, DSpark q=4, 4 of 6 experts",28.2,,403,,D,2026-09-20,0,"reduced expert routing, not the same model; peak 31.3"
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",ROCMFP2-STRIX,102.3,Lucebox dflash_server,iGPU,"HIP, DSpark q=4, all 6 experts",26.5,,367,,D,2026-09-20,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",ROCMFP2-STRIX,102.3,Lucebox dflash_server,iGPU,"HIP, no draft, 4 of 6 experts",22.8,,411,,D,2026-09-20,0,"reduced expert routing, not the same model"
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp (fork v0.6.4),iGPU,"Vulkan, DSpark n=3, llama-cli, short answer",29.0,,,,D,2026-08,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp (fork v0.6.4),iGPU,"Vulkan, DSpark n=3, llama-cli, prose",28.2,,,,D,2026-08,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp (fork v0.6.4),iGPU,"Vulkan, DSpark n=3, llama-cli, code",23.9,,,,D,2026-08,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp (fork v0.6.4),iGPU,"Vulkan, no draft, governor performance",18.85,,207.53,,C,2026-08,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp (fork v0.6.4),iGPU,"Vulkan, no draft",18.33,,208.4,,C,2026-08,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp mainline b10488,iGPU,"Vulkan, no draft",11.94,,127.39,,C,2026-08,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp mainline b10488,iGPU,"Vulkan, with DSpark draft",7.7,,,,D,2026-08,0,speculative decoding slowed mainline down
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp,iGPU,"smoke test, with DSpark draft",24.6,,,,A,2026-09-15,0,
+DeepSeek-V4-Flash-0731,"284B MoE, 13B active",UD-IQ3_XXS,104,llama.cpp,iGPU,"smoke test, no draft",17.9,,,,A,2026-09-15,0,
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp master + PR #27952,iGPU,"Vulkan, llama-bench",53.7,,1151.9,,C,2026-09-21,1,pp2048 with -ub 2048: 1463.9
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp master ec9281505,iGPU,"Vulkan, llama-bench",53.66,,783.2,,C,2026-09-21,0,pp2048 with -ub 2048: 1112.2
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, llama-bench",53.6,,847.2,,C,2026-09-21,0,pp2048 with -ub 2048: 1130.3
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (lab build),iGPU,"Vulkan, service setting",53.6,,1459,,D,2026-09-22,0,"prompt: 2048 tokens, empty context"
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, -fa 1 -b 2048 -ub 512",53.5,,834.9,,C,2026-09-20,0,
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, no draft, server mode",51.7,,,,D,2026-09-20,0,
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,Lemonade (llama.cpp),iGPU,"Vulkan, smoke test",49.3,,,,A,2026-09-15,0,
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, context depth 8192",49.1,,747.7,,C,2026-09-20,0,
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp upstream a894dae,iGPU,"HIP (ROCm 7.1.1), llama-bench",47.6,,939.7,,C,2026-09-20,0,pp2048 with -ub 2048: 1230.2
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, EAGLE3 draft length 1",43.7,,,,D,2026-09-20,0,the draft model makes it slower
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, EAGLE3 draft length 2",38.9,,,,D,2026-09-20,0,the draft model makes it slower
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, EAGLE3 draft length 3",32.4,,,,D,2026-09-20,0,the draft model makes it slower
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, EAGLE3 draft length 4",27.7,,,,D,2026-09-20,0,the draft model makes it slower
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, context depth 32768",40.6,,,,C,2026-09-21,0,
+gpt-oss-120b,"117B MoE, 4 of 128 experts active",MXFP4,63.4,llama.cpp (Nathanw1014 fork),iGPU,"Vulkan, real request with ~87,000 prompt tokens",29.1,,622,,D,2026-09-20,0,
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp (lab build),iGPU,"Vulkan, service",94.3,,2115,,D,2026-09-22,1,"prompt: 2048 tokens, empty context"
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp (strix fork),iGPU,"Vulkan, service",88.8,,1830,,D,2026-09-21,0,"prompt: 2048 tokens, empty context"
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp (fork v0.6.4),iGPU,"Vulkan, governor performance, GPU level high",87.57,,1550.14,,C,2026-08,0,
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp mainline,iGPU,"Vulkan, -fa 1 -mmp 0 -b 2048 -ub 512 -t 16 --poll 50",85.53,,1378.19,,C,2026-08,0,
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp (fork v0.6.4),iGPU,Vulkan,84.94,,1542.13,,C,2026-08,0,
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp mainline,iGPU,"Vulkan, no extra flags",84.33,,1339.84,,C,2026-08,0,
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp mainline,iGPU,"HIP (ROCm), guide flags",72.71,,1295.68,,C,2026-08,0,August HIP build computed wrong results on gfx1151 (found 2026-09-14); speed only
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp master c85b92c69,iGPU,"Vulkan, llama-bench tg128 / pp512, GGML_VK_DISABLE_MMVQ set",95.82,,1795,,C,2026-09-29,0,
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp (lab build),iGPU,"Vulkan, llama-bench tg128 / pp512",94.48,,1818,,C,2026-09-29,0,
+Qwen3-30B-A3B-Instruct-2507,"30B MoE, 3B active",IQ4_XS,16.4,llama.cpp master c85b92c69,iGPU,"Vulkan, llama-bench tg128 / pp512, new IQ4_XS MMVQ kernels",93.49,,1803,,C,2026-09-29,0,with PR #29182 (MoE tile selection) pp512 drops from 1822 to 1492
+gemma4:12b,12B dense,Q4_K_M,7.37,llama.cpp 9731ad3,iGPU,"Vulkan, llama-bench",25.58,,741.0,,C,2026-08,1,
+gemma4:12b,12B dense,Q4_K_M,7.37,llama.cpp 9731ad3,iGPU,"HIP (ROCm), llama-bench",23.75,,816.0,,C,2026-08,0,August HIP build computed wrong results on gfx1151 (found 2026-09-14); speed only
+gemma4:12b,12B dense,Q4_K_M,7.6,Ollama,iGPU,smoke test,23.3,,,,A,2026-09-15,0,
+NousResearch Hermes-4-14B,14B dense,Q4_K_M,9.0,llama.cpp 9731ad3,iGPU,"Vulkan, llama-bench",23.45,,694.5,,C,2026-08,1,
+NousResearch Hermes-4-14B,14B dense,Q4_K_M,9.0,llama.cpp 9731ad3,iGPU,"HIP (ROCm), llama-bench",21.51,,696.6,,C,2026-08,0,August HIP build computed wrong results on gfx1151 (found 2026-09-14); speed only
+NousResearch Hermes-4-14B,14B dense,Q4_K_M,9.0,Ollama,iGPU,smoke test,22.5,,,,A,2026-09-15,0,
+muse-glimmer,30B dense,Q4_K_M,16.74,llama.cpp 9731ad3,iGPU,"Vulkan, llama-bench",12.4,,356.6,,C,2026-08,1,
+muse-glimmer,30B dense,Q4_K_M,16.74,llama.cpp 9731ad3,iGPU,"HIP (ROCm), llama-bench",11.38,,367.0,,C,2026-08,0,August HIP build computed wrong results on gfx1151 (found 2026-09-14); speed only
+muse-glimmer,30B dense,Q4_K_M,18.2,Ollama,iGPU,smoke test,11.6,,,,A,2026-09-15,0,
+GLM-5.3-Flash,"313B MoE, 17B active",UD-IQ1_S,93,"llama.cpp (unsloth branch glm5next, 86ebfef2c)",iGPU,"Vulkan, built-in MTP draft length 2, mean of three prompts",25.0,25.0 (22.3–27.4),145,,D,2026-09-29,1,"needs -fa off; 95 GiB in use with MTP, runs only alone; perplexity 4.49; prompt figure from llama-bench pp512; the first load attempt on 2026-09-21 failed"
+GLM-5.3-Flash,"313B MoE, 17B active",UD-IQ1_S,93,"llama.cpp (unsloth branch glm5next, 86ebfef2c)",iGPU,"Vulkan, MTP draft length 2, C code",27.4,,,,D,2026-09-29,0,
+GLM-5.3-Flash,"313B MoE, 17B active",UD-IQ1_S,93,"llama.cpp (unsloth branch glm5next, 86ebfef2c)",iGPU,"Vulkan, MTP draft length 2, explanation",25.3,,,,D,2026-09-29,0,
+GLM-5.3-Flash,"313B MoE, 17B active",UD-IQ1_S,93,"llama.cpp (unsloth branch glm5next, 86ebfef2c)",iGPU,"Vulkan, MTP draft length 2, poem",22.3,,,,D,2026-09-29,0,
+GLM-5.3-Flash,"313B MoE, 17B active",UD-IQ1_S,93,"llama.cpp (unsloth branch glm5next, 86ebfef2c)",iGPU,"Vulkan, llama-bench pp512 / tg128",17.63,,145.0,,C,2026-09-29,0,
+GLM-5.3-Flash,"313B MoE, 17B active",UD-IQ1_S,93,"llama.cpp (unsloth branch glm5next, 86ebfef2c)",iGPU,"Vulkan, no MTP, llama-server, three prompts",17.05,17.0–17.1,,,D,2026-09-29,0,89 GiB in use
+GLM-5.3-Flash,"313B MoE, 17B active",UD-IQ1_S,93,"llama.cpp (unsloth branch glm5next, 86ebfef2c)",iGPU,"Vulkan, llama-bench at context depth 4096",15.46,,131.5,,C,2026-09-29,0,
+DeepSeek-V4 REAP (pruned),MoE,,79,colibri,,fully resident,2.19,,,,E,2026-09-15,1,compute-bound
+GLM-5.2,744B MoE,int4,400,colibri,iGPU + NVMe,"tuned: 4500 experts in the Vulkan tier, O_DIRECT",1.29,,,,E,2026-09-15,1,experts streamed from NVMe; realistic 0.8–1.0
+GLM-5.2,744B MoE,int4,400,colibri,iGPU + NVMe,"routing sweep, TOPK=4",1.71,,,,E,2026-09-18,0,"reduced expert routing, not the same model"
+GLM-5.2,744B MoE,int4,400,colibri,iGPU + NVMe,"routing sweep, baseline",1.0,,,,E,2026-09-18,0,
+GLM-5.2,744B MoE,int4,400,colibri,iGPU + NVMe,"first measurement, 320 experts in the Vulkan tier",0.3,0.26–0.33,,,E,2026-09-14,0,
+Ling-2.6-flash,"104B MoE, 7.4B active",IQ4_NL,65,Ollama,,,,,,,,2026-09-16,1,HTTP 500 on every request: architecture bailing_hybrid not supported by the bundled llama.cpp; never loaded
+qwen3.8:27b-mxfp8,27B dense,MXFP8,32,Ollama,,,,,,,,2026-09-16,1,"""this model requires MLX support"": Apple only"
+Qwen3-VL-235B-A22B-Instruct,236B MoE,Q4_K_M,133,,,,,,,,,2026-09-16,1,larger than the machine's memory; not downloaded
+MiniMax-M2-AWQ-4bit,"230B MoE, 10B active",AWQ 4 bit,115,,,,,,,,,2026-09-16,1,"too large, and AWQ needs vLLM, which does not run usefully on gfx1151; not downloaded"
+Kimi K2,"1T MoE, 32B active",4 bit,600,,,,,,,,,2026-09-16,1,five times the machine's memory; not downloaded
