@@ -31,6 +31,7 @@ Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,DKMS driver build of 2026-09-15,1
 Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,smoke test,10.1,,,,A,2026-09-15,0,scored 4/6 where the iGPU run scored 6/6
 gpt-oss-20b-FLM,"21B MoE, ~3.6B active",,14,FastFlowLM,NPU,first run,19.3,,26.3,21.8–26.3,D,2026-08-16,1,
 gpt-oss-20b-FLM,"21B MoE, ~3.6B active",,14,FastFlowLM,NPU,smoke test,16.2,,,,A,2026-09-15,0,
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build hybrid),iGPU,"Vulkan + MTP, service llama-qwen36, one 203883-token prompt (needle test, 3 of 3 needles found)",42.5,generation at 204k depth,264.8,"average over 204k tokens: 770 s to first token",D,2026-09-29,0,long-context cost: prompt speed falls from ~1500 to 265 tok/s on average
 Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build hybrid),iGPU,"Vulkan, no MTP, llama-bench -fa 1 -ub 2048",62.97,55.59 at depth 16384,1523.18,"pp512 1445, pp4096 1793, pp16384 1523",C,2026-09-29,0,
 Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build),iGPU,"Vulkan, with MTP, family chat service",97,≈ 97,1839,,D,2026-09-22,1,"prompt: 2048 tokens, empty context"
 Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork),iGPU,"Vulkan, with MTP",89.8,,1610,,D,2026-09-18,0,"prompt figure from 2026-09-21, 2048 tokens"

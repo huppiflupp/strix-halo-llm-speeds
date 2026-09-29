@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 39 models with a measured speed, 167 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 39 models with a measured speed, 168 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -90,7 +90,7 @@ were not measured here and are therefore not in the list.
 Models with more than one measurement, fastest first. Click a name to open its table.
 
 <details>
-<summary><b>Qwen3.6-35B-A3B</b> — 31 measurements, 10.2 to 100.5 tok/s</summary>
+<summary><b>Qwen3.6-35B-A3B</b> — 32 measurements, 10.2 to 100.5 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
@@ -119,6 +119,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | Ollama | qwen3.6-en | Q4_K_M, 23.9 GB | 54 | — | A | 2026-09-15 | — |
 | llama.cpp master bfdc321 | HIP (ROCm), llama-bench tg200 / pp4096 | UD-IQ4_XS, 17 GB | 50.36 | 966.9 | C | 2026-09-14 | — |
 | llama.cpp 9731ad3 | HIP (ROCm), llama-bench tg200 / pp4096 | UD-IQ4_XS, 17 GB | 49.95 | 965.3 | C | 2026-08 | August HIP build computed wrong results on gfx1151 (found 2026-09-14); speed only |
+| llama.cpp (lab build hybrid) | Vulkan + MTP, service llama-qwen36, one 203883-token prompt (needle test, 3 of 3 needles found) | UD-IQ4_XS, 17 GB | generation at 204k depth | average over 204k tokens: 770 s to first token | D | 2026-09-29 | long-context cost: prompt speed falls from ~1500 to 265 tok/s on average |
 | colibri (PR #1338) | Vulkan expert tier, all experts on the GPU | int4, 22 GB | 31.6 | — | E | 2026-09-26 | — |
 | colibri on the **CPU** | CPU only, 16 threads | int4, 22 GB | 19.8 | — | E | 2026-09-26 | — |
 | colibri on the **CPU** | CPU only | int4, 22 GB | 19.7 | — | E | 2026-09-14 | — |
