@@ -94,6 +94,8 @@ were not measured here and are therefore not in the list.
 | colibri fork, own GPU decode | int4 trunk | 66.9 | — | 09-28 |
 | llama.cpp Vulkan | UD-IQ4_XS, no MTP (`llama-bench` tg256) | 62.7 | 1461 (pp512) | 09-26 |
 | llama.cpp master c85b92c69, Vulkan (new IQ4_XS kernels, no lab patches) | UD-IQ4_XS, `llama-bench` tg128; lab build same day: 62.96 / 1460 | 63.15 | 1402 (pp512) | 09-29 |
+| llama.cpp master c85b92c69 + PR #29182 (MoE tile selection), Vulkan | UD-IQ4_XS, `llama-bench` pp512 (master 1401) | — | 1337 | 09-29 |
+| llama.cpp master c85b92c69 + PR #25666 (no MMVQ on spec-decode steps), Vulkan | UD-IQ4_XS + MTP, greedy poem / explanation / C code; master 61.3 / 91.7 / 91.6 | 58.6 / 91.5 / 100.5 | — | 09-29 |
 | Ollama | Q4_K_M, 23.9 GB (`qwen3.6:latest`) | 54.5 | — | 09-15 |
 | Ollama | Q4_K_M, 23.9 GB (`qwen3.6-en`) | 54.0 | — | 09-15 |
 | colibri, Vulkan expert tier (PR #1338) | int4, all experts on the GPU | 31.6 | — | 09-26 |
@@ -196,6 +198,7 @@ makes it slower.
 |---|---|---:|---:|---|
 | llama.cpp lab build, Vulkan | service | 94.3 | 2115 (2048 tokens) | 09-22 |
 | llama.cpp master c85b92c69, Vulkan | `llama-bench` tg128, new IQ4_XS MMVQ on / off (`GGML_VK_DISABLE_MMVQ`); lab build same day: 94.48 / 1818 | 93.49 / 95.82 | 1803 / 1795 (pp512) | 09-29 |
+| llama.cpp master c85b92c69 + PR #29182 (MoE tile selection), Vulkan | `llama-bench` pp512 (master 1822) | — | 1492 | 09-29 |
 | llama.cpp strix fork, Vulkan | service | 88.8 | 1830 (2048 tokens) | 09-21 |
 | llama.cpp fork v0.6.4, Vulkan | governor `performance`, GPU `high` | 87.57 | 1550 (pp512) | 08 |
 | llama.cpp mainline, Vulkan | `-fa 1 -mmp 0 -b 2048 -ub 512` | 85.53 | 1378 (pp512) | 08 |
