@@ -103,6 +103,10 @@ were not measured here and are therefore not in the list.
 | FastFlowLM on the NPU | `qwen3.6-moe-35b-a3b-FLM` | 13.4 (first run), 10.2 (smoke test) | 6.9 | 09-15 |
 | colibri, HIP expert tier | int4 | 12.35 | — | 09-14 |
 
+Perplexity check for the 09-29 rows (wikitext-2, 4 × 2048): lab build, master and master + #29182 all 6.3139
+at `-ub 512`; master 6.3124 and + #25666 6.3154 at `-ub 4`. Qwen3-30B: 6.6888 (lab) / 6.6770 (master, + #29182),
+6.6844 / 6.6861 at `-ub 4` with / without the new MMVQ path. None of the new paths computes wrongly.
+
 ### Qwen3.8-27B (dense)
 
 | Engine | Configuration | Generation tok/s | Prompt tok/s | Date |
