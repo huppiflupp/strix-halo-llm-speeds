@@ -31,7 +31,7 @@ Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,DKMS driver build of 2026-09-15,1
 Gemma-4-E4B-it,4B active,q4nx,9,FastFlowLM,NPU,smoke test,10.1,,,,A,2026-09-15,0,scored 4/6 where the iGPU run scored 6/6
 gpt-oss-20b-FLM,"21B MoE, ~3.6B active",,14,FastFlowLM,NPU,first run,19.3,,26.3,21.8–26.3,D,2026-08-16,1,
 gpt-oss-20b-FLM,"21B MoE, ~3.6B active",,14,FastFlowLM,NPU,smoke test,16.2,,,,A,2026-09-15,0,
-Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build hybrid),iGPU,"Vulkan + MTP, service llama-qwen36, one 203883-token prompt (needle test, 3 of 3 needles found)",42.5,generation at 204k depth,264.8,"average over 204k tokens: 770 s to first token",D,2026-09-29,0,long-context cost: prompt speed falls from ~1500 to 265 tok/s on average
+Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build hybrid),iGPU,"Vulkan + MTP, service llama-qwen36, one 203883-token prompt (needle test, 3 of 3 needles found)",42.5,generation at 204k depth,264.8,average over 204k tokens: 770 s to first token,D,2026-09-29,0,long-context cost: prompt speed falls from ~1500 to 265 tok/s on average
 Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build hybrid),iGPU,"Vulkan, no MTP, llama-bench -fa 1 -ub 2048",62.97,55.59 at depth 16384,1523.18,"pp512 1445, pp4096 1793, pp16384 1523",C,2026-09-29,0,
 Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (lab build),iGPU,"Vulkan, with MTP, family chat service",97,≈ 97,1839,,D,2026-09-22,1,"prompt: 2048 tokens, empty context"
 Qwen3.6-35B-A3B,"35B MoE, 3B active",UD-IQ4_XS,17,llama.cpp (strix fork),iGPU,"Vulkan, with MTP",89.8,,1610,,D,2026-09-18,0,"prompt figure from 2026-09-21, 2048 tokens"
@@ -90,7 +90,7 @@ Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,llama.cpp (stri
 Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,llama.cpp (strix fork 10707),iGPU,"Vulkan, MTP off, 400 tokens",11.2,,348,,D,2026-09-16,0,
 Qwen3.8-27B Heretic (DavidAU finetune),27B dense,MTP-Q4_K_M,18.5,Ollama 0.34.1,iGPU,"MTP off, 400 tokens",10.9,,281,,D,2026-09-16,0,
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 2",41.3,,,,D,2026-09-28,1,"occupies 94 GiB, runs only alone"
-Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 2, full context 262144",40.67,,,,D,2026-09-29,0,"one prompt; 78.2 GiB GTT + 27.1 GiB host RAM"
+Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 2, full context 262144",40.67,,,,D,2026-09-29,0,one prompt; 78.2 GiB GTT + 27.1 GiB host RAM
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, MTP draft length 3",40.6,,,,D,2026-09-28,0,
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, no MTP, llama-bench -fa 1 -ub 2048",27.19,23.90 at depth 16384,461.65,"pp512 504, pp4096 508, pp16384 462",C,2026-09-29,0,prompt is 3.3x slower than Qwen3.6
 Qwen3.8-Flash-Next,"125B MoE, 6B active",UD-IQ4_XS,93.7,llama.cpp (PR #28243),iGPU,"Vulkan, no MTP",26.85,,,,D,2026-09-28,0,
@@ -172,9 +172,15 @@ qwen3.8:27b-mxfp8,27B dense,MXFP8,32,Ollama,,,,,,,,2026-09-16,1,"""this model re
 Qwen3-VL-235B-A22B-Instruct,236B MoE,Q4_K_M,133,,,,,,,,,2026-09-16,1,larger than the machine's memory; not downloaded
 MiniMax-M2-AWQ-4bit,"230B MoE, 10B active",AWQ 4 bit,115,,,,,,,,,2026-09-16,1,"too large, and AWQ needs vLLM, which does not run usefully on gfx1151; not downloaded"
 Kimi K2,"1T MoE, 32B active",4 bit,600,,,,,,,,,2026-09-16,1,five times the machine's memory; not downloaded
-MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, MTP draft length 2 (ggml-org Q8_0 sidecar), mean of three prompts",30.25,30.3 (25.1–33.6),273,,D,2026-09-30,1,"Xiaomi; experts ~2 bit, rest Q6_K; 74.6 GiB in use with MTP; perplexity 6.34 (wikitext, 4x2048); MTP slows the poem down (37 % accepted), code +15–20 %; DFlash sidecar crashed on load (build lacks upstream 22bdcc4cd)"
-MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, MTP draft length 2, C code",33.6,,,,D,2026-09-30,0,68 % accepted
-MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, MTP draft length 2, explanation",32.07,,,,D,2026-09-30,0,63 % accepted
-MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, MTP draft length 2, poem",25.07,,,,D,2026-09-30,0,37 % accepted
-MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, no MTP, llama-server, three prompts",27.86,27.8–27.9,,,D,2026-09-30,0,71.5 GiB in use
-MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, llama-bench pp512 / tg128",28.02,26.60 at depth 16384,273.07,"pp512 273, at 4096 265, at 16384 231",C,2026-09-30,0,sliding-window attention: little slowdown with context
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master c85b92c69),iGPU,"Vulkan, MTP draft length 2 (ggml-org Q8_0 sidecar), mean of three prompts",30.25,30.3 (25.1–33.6),273,,D,2026-09-30,0,"Xiaomi; experts ~2 bit, rest Q6_K; 74.6 GiB in use with MTP; perplexity 6.34 (wikitext, 4x2048); MTP slows the poem down (37 % accepted), code +15–20 %; DFlash crashed on this build (lacks upstream 22bdcc4cd), see the 4f31296a9 rows"
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master c85b92c69),iGPU,"Vulkan, MTP draft length 2, C code",33.6,,,,D,2026-09-30,0,68 % accepted
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master c85b92c69),iGPU,"Vulkan, MTP draft length 2, explanation",32.07,,,,D,2026-09-30,0,63 % accepted
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master c85b92c69),iGPU,"Vulkan, MTP draft length 2, poem",25.07,,,,D,2026-09-30,0,37 % accepted
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master c85b92c69),iGPU,"Vulkan, no MTP, llama-server, three prompts",27.86,27.8–27.9,,,D,2026-09-30,0,71.5 GiB in use
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master c85b92c69),iGPU,"Vulkan, llama-bench pp512 / tg128",28.02,26.60 at depth 16384,273.07,"pp512 273, at 4096 265, at 16384 231",C,2026-09-30,0,sliding-window attention: little slowdown with context
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master 4f31296a9),iGPU,"Vulkan, DFlash draft (ggml-org Q8_0 sidecar), mean of three prompts",33.29,33.3 (23.7–40.1),273,,D,2026-09-30,1,"Xiaomi; experts ~2 bit, rest Q6_K; 74.8 GiB in use; perplexity 6.34 (wikitext, 4x2048); DFlash needs upstream 22bdcc4cd; poem slower than without drafting (26 % accepted), code up to +44 %"
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master 4f31296a9),iGPU,"Vulkan, DFlash draft, C code",40.05,,,,D,2026-09-30,0,"69 % accepted, mean length 3.06"
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master 4f31296a9),iGPU,"Vulkan, DFlash draft, explanation",36.1,,,,D,2026-09-30,0,59 % accepted
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master 4f31296a9),iGPU,"Vulkan, DFlash draft, poem",23.72,,,,D,2026-09-30,0,26 % accepted
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master 4f31296a9),iGPU,"Vulkan, MTP draft length 2, mean of three prompts",30.27,30.3 (25.1–33.6),,,D,2026-09-30,0,same as on c85b92c69
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,llama.cpp (master 4f31296a9),iGPU,"Vulkan, no MTP, llama-server, three prompts",27.82,27.8–27.9,,,D,2026-09-30,0,same as on c85b92c69

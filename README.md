@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 40 models with a measured speed, 174 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 40 models with a measured speed, 180 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -48,9 +48,9 @@ the running service where there is one. Every other measurement of the same mode
 | 20 | DeepSeek-Qwen3-8B | 8B | Q4_1, 4.9 GB | Lemonade (llama.cpp), Vulkan | **40.6** | — | A |
 | 21 | granite4.2 | 8B dense | 5.3 GB | Ollama | **40.4** | — | B |
 | 22 | qwen3-vl:8b-instruct | 8B | Q4_K_M, 6.1 GB | Ollama | **37.3** | — | A |
-| 23 | Qwen3.8-27B | 27B dense | Q4_K_M, 16.8 GB | llama.cpp (lab build), Vulkan, with MTP, coder service under agent load | **30–36** | 478.9 | D |
-| 24 | qwen3.5:9b | 9B | Q4_K_M, 6.6 GB | Ollama | **31.5** | — | A |
-| 25 | MiMo-V2.6-Flash-MOPD | 309B MoE, 15B active | AesSedai BPW2.0, 77.4 GB | llama.cpp (master c85b92c69), Vulkan, MTP draft length 2 (ggml-org Q8_0 sidecar), mean of three prompts | **30.3 (25.1–33.6)** | 273 | D |
+| 23 | MiMo-V2.6-Flash-MOPD | 309B MoE, 15B active | AesSedai BPW2.0, 77.4 GB | llama.cpp (master 4f31296a9), Vulkan, DFlash draft (ggml-org Q8_0 sidecar), mean of three prompts | **33.3 (23.7–40.1)** | 273 | D |
+| 24 | Qwen3.8-27B | 27B dense | Q4_K_M, 16.8 GB | llama.cpp (lab build), Vulkan, with MTP, coder service under agent load | **30–36** | 478.9 | D |
+| 25 | qwen3.5:9b | 9B | Q4_K_M, 6.6 GB | Ollama | **31.5** | — | A |
 | 26 | DeepSeek-V4-Flash-0731 | 284B MoE, 13B active | UD-IQ2_XXS, 91 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, DSpark draft n=3 | **28.91** | 261.7 | D |
 | 27 | Qwen3.8-27B Heretic (DavidAU finetune) | 27B dense | MTP-Q4_K_M, 18.5 GB | llama.cpp (strix fork 10565), Vulkan, with MTP, 400 tokens | **28.3** | 242 | D |
 | 28 | gemma4:12b | 12B dense | Q4_K_M, 7.37 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **25.58** | 741 | C |
@@ -202,16 +202,22 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>MiMo-V2.6-Flash-MOPD</b> — 6 measurements, 25.07 to 33.6 tok/s</summary>
+<summary><b>MiMo-V2.6-Flash-MOPD</b> — 12 measurements, 23.72 to 40.05 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
+| llama.cpp (master 4f31296a9) | Vulkan, DFlash draft, C code | AesSedai BPW2.0, 77.4 GB | 40.05 | — | D | 2026-09-30 | 69 % accepted, mean length 3.06 |
+| llama.cpp (master 4f31296a9) | Vulkan, DFlash draft, explanation | AesSedai BPW2.0, 77.4 GB | 36.1 | — | D | 2026-09-30 | 59 % accepted |
 | llama.cpp (master c85b92c69) | Vulkan, MTP draft length 2, C code | AesSedai BPW2.0, 77.4 GB | 33.6 | — | D | 2026-09-30 | 68 % accepted |
+| llama.cpp (master 4f31296a9) | Vulkan, DFlash draft (ggml-org Q8_0 sidecar), mean of three prompts | AesSedai BPW2.0, 77.4 GB | 33.3 (23.7–40.1) | 273 | D | 2026-09-30 | Xiaomi; experts ~2 bit, rest Q6_K; 74.8 GiB in use; perplexity 6.34 (wikitext, 4x2048); DFlash needs upstream 22bdcc4cd; poem slower than without drafting (26 % accepted), code up to +44 % |
 | llama.cpp (master c85b92c69) | Vulkan, MTP draft length 2, explanation | AesSedai BPW2.0, 77.4 GB | 32.07 | — | D | 2026-09-30 | 63 % accepted |
-| llama.cpp (master c85b92c69) | Vulkan, MTP draft length 2 (ggml-org Q8_0 sidecar), mean of three prompts | AesSedai BPW2.0, 77.4 GB | 30.3 (25.1–33.6) | 273 | D | 2026-09-30 | Xiaomi; experts ~2 bit, rest Q6_K; 74.6 GiB in use with MTP; perplexity 6.34 (wikitext, 4x2048); MTP slows the poem down (37 % accepted), code +15–20 %; DFlash sidecar crashed on load (build lacks upstream 22bdcc4cd) |
+| llama.cpp (master 4f31296a9) | Vulkan, MTP draft length 2, mean of three prompts | AesSedai BPW2.0, 77.4 GB | 30.3 (25.1–33.6) | — | D | 2026-09-30 | same as on c85b92c69 |
+| llama.cpp (master c85b92c69) | Vulkan, MTP draft length 2 (ggml-org Q8_0 sidecar), mean of three prompts | AesSedai BPW2.0, 77.4 GB | 30.3 (25.1–33.6) | 273 | D | 2026-09-30 | Xiaomi; experts ~2 bit, rest Q6_K; 74.6 GiB in use with MTP; perplexity 6.34 (wikitext, 4x2048); MTP slows the poem down (37 % accepted), code +15–20 %; DFlash crashed on this build (lacks upstream 22bdcc4cd), see the 4f31296a9 rows |
 | llama.cpp (master c85b92c69) | Vulkan, llama-bench pp512 / tg128 | AesSedai BPW2.0, 77.4 GB | 26.60 at depth 16384 | pp512 273, at 4096 265, at 16384 231 | C | 2026-09-30 | sliding-window attention: little slowdown with context |
 | llama.cpp (master c85b92c69) | Vulkan, no MTP, llama-server, three prompts | AesSedai BPW2.0, 77.4 GB | 27.8–27.9 | — | D | 2026-09-30 | 71.5 GiB in use |
+| llama.cpp (master 4f31296a9) | Vulkan, no MTP, llama-server, three prompts | AesSedai BPW2.0, 77.4 GB | 27.8–27.9 | — | D | 2026-09-30 | same as on c85b92c69 |
 | llama.cpp (master c85b92c69) | Vulkan, MTP draft length 2, poem | AesSedai BPW2.0, 77.4 GB | 25.07 | — | D | 2026-09-30 | 37 % accepted |
+| llama.cpp (master 4f31296a9) | Vulkan, DFlash draft, poem | AesSedai BPW2.0, 77.4 GB | 23.72 | — | D | 2026-09-30 | 26 % accepted |
 
 </details>
 
