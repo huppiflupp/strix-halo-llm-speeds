@@ -172,3 +172,9 @@ qwen3.8:27b-mxfp8,27B dense,MXFP8,32,Ollama,,,,,,,,2026-09-16,1,"""this model re
 Qwen3-VL-235B-A22B-Instruct,236B MoE,Q4_K_M,133,,,,,,,,,2026-09-16,1,larger than the machine's memory; not downloaded
 MiniMax-M2-AWQ-4bit,"230B MoE, 10B active",AWQ 4 bit,115,,,,,,,,,2026-09-16,1,"too large, and AWQ needs vLLM, which does not run usefully on gfx1151; not downloaded"
 Kimi K2,"1T MoE, 32B active",4 bit,600,,,,,,,,,2026-09-16,1,five times the machine's memory; not downloaded
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, MTP draft length 2 (ggml-org Q8_0 sidecar), mean of three prompts",30.25,30.3 (25.1–33.6),273,,D,2026-09-30,1,"Xiaomi; experts ~2 bit, rest Q6_K; 74.6 GiB in use with MTP; perplexity 6.34 (wikitext, 4x2048); MTP slows the poem down (37 % accepted), code +15–20 %; DFlash sidecar crashed on load (build lacks upstream 22bdcc4cd)"
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, MTP draft length 2, C code",33.6,,,,D,2026-09-30,0,68 % accepted
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, MTP draft length 2, explanation",32.07,,,,D,2026-09-30,0,63 % accepted
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, MTP draft length 2, poem",25.07,,,,D,2026-09-30,0,37 % accepted
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, no MTP, llama-server, three prompts",27.86,27.8–27.9,,,D,2026-09-30,0,71.5 GiB in use
+MiMo-V2.6-Flash-MOPD,"309B MoE, 15B active",AesSedai BPW2.0,77.4,"llama.cpp (master c85b92c69)",iGPU,"Vulkan, llama-bench pp512 / tg128",28.02,26.60 at depth 16384,273.07,"pp512 273, at 4096 265, at 16384 231",C,2026-09-30,0,sliding-window attention: little slowdown with context
