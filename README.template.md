@@ -87,7 +87,7 @@ NPU is a second compute unit that runs while the iGPU is busy, not an accelerato
 | **A** | Smoke test through Ollama and Lemonade, 2026-09-15 | six short German tasks, 400-token output cap, "tok/s warm", one run per model | other A rows |
 | **B** | Candidate run, 2026-09-16 | same six tasks, 2000-token cap, thinking switched off | other B rows, roughly A |
 | **C** | `llama-bench` | `-ngl 999 -p 512 -n 128` unless the configuration says otherwise, 2–3 repetitions | other C rows |
-| **D** | `llama-server` or the running service | fixed prompts, median or mean; with speculative decoding where stated | same model only |
+| **D** | `llama-server`, `vllm serve` or the running service | fixed prompts, median or mean; with speculative decoding where stated | same model only |
 | **E** | colibri (`JustVugg/colibri`) | decode speed as reported by the engine | other E rows |
 
 Caveats that apply to the whole list:

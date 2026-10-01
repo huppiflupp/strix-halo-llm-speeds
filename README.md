@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 40 models with a measured speed, 184 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 41 models with a measured speed, 187 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -64,8 +64,9 @@ the running service where there is one. Every other measurement of the same mode
 | 36 | gemma4:31b | 31B dense | Q4_K_M, 19.9 GB | Ollama | **9.7** | — | A |
 | 37 | llama3.1:70b | 70B dense | 43 GB | Ollama | **5.6** | — | B |
 | 38 | nemotron | MoE | 43 GB | Ollama | **5.3** | — | B |
-| 39 | DeepSeek-V4 REAP (pruned) | MoE | 79 GB | colibri, fully resident | **2.19** | — | E |
-| 40 | GLM-5.2 | 744B MoE | int4, 400 GB | colibri on the **iGPU + NVMe**, tuned: 4500 experts in the Vulkan tier, O_DIRECT | **1.29** | — | E |
+| 39 | Mistral-Medium-3.5-128B | 128B dense | W4A16 (plezan, compressed-tensors, group 128), 74.6 GB | vLLM 0.30.0+strix (kyuz0/vllm-therock-gfx1151, transformers 5.16.1), ROCm, RDNAHybridW4A16 kernel, EAGLE head (mistralai/Mistral-Medium-3.5-128B-EAGLE, dequantized FP8 -> BF16) draft length 3, mean of four prompts | **3.6 (2.4–4.3)** | — | D |
+| 40 | DeepSeek-V4 REAP (pruned) | MoE | 79 GB | colibri, fully resident | **2.19** | — | E |
+| 41 | GLM-5.2 | 744B MoE | int4, 400 GB | colibri on the **iGPU + NVMe**, tuned: 4500 experts in the Vulkan tier, O_DIRECT | **1.29** | — | E |
 
 Generation speed is memory-bound on this machine: what counts is how many bytes are read
 per token, not the parameter count in the name. Every model above 40 tok/s is either small
@@ -358,6 +359,17 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
+<summary><b>Mistral-Medium-3.5-128B</b> — 3 measurements, 3.26 to 3.59 tok/s</summary>
+
+| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
+|---|---|---|---:|---:|---|---|---|
+| vLLM 0.30.0+strix (kyuz0/vllm-therock-gfx1151, transformers 5.16.1) | ROCm, RDNAHybridW4A16 kernel, EAGLE head (mistralai/Mistral-Medium-3.5-128B-EAGLE, dequantized FP8 -> BF16) draft length 3, mean of four prompts | W4A16 (plezan, compressed-tensors, group 128), 74.6 GB | 3.6 (2.4–4.3) | — | D | 2026-10-01 | official EAGLE head; mean accepted length 3.2 code, 3.4 maths, 2.8 list, 1.9 prose; prose is slower than without draft (2.37); FP8 head does not load (no FP8 scaled-MM kernel on gfx1151), BF16 head reads ~9 GB per draft step incl. lm_head; ~5.5 s to first token for a 50-token prompt; llama.cpp cannot load this EAGLE-1-style head |
+| vLLM 0.30.0+strix (kyuz0/vllm-therock-gfx1151, transformers 5.16.1) | ROCm, EAGLE head BF16 draft length 2, mean of four prompts | W4A16 (plezan, compressed-tensors, group 128), 74.6 GB | 3.3 (2.2–3.8) | — | D | 2026-10-01 | no gain over no draft |
+| vLLM 0.30.0+strix (kyuz0/vllm-therock-gfx1151, transformers 5.16.1) | ROCm, no draft, four prompts | W4A16 (plezan, compressed-tensors, group 128), 74.6 GB | 3.26–3.27 | — | D | 2026-10-01 | 0.31 s per token for 75 GB weights, close to the memory bandwidth limit; dense 128B is simply too large for this box |
+
+</details>
+
+<details>
 <summary><b>GLM-5.2</b> — 4 measurements, 0.3 to 1.71 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
@@ -413,7 +425,7 @@ NPU is a second compute unit that runs while the iGPU is busy, not an accelerato
 | **A** | Smoke test through Ollama and Lemonade, 2026-09-15 | six short German tasks, 400-token output cap, "tok/s warm", one run per model | other A rows |
 | **B** | Candidate run, 2026-09-16 | same six tasks, 2000-token cap, thinking switched off | other B rows, roughly A |
 | **C** | `llama-bench` | `-ngl 999 -p 512 -n 128` unless the configuration says otherwise, 2–3 repetitions | other C rows |
-| **D** | `llama-server` or the running service | fixed prompts, median or mean; with speculative decoding where stated | same model only |
+| **D** | `llama-server`, `vllm serve` or the running service | fixed prompts, median or mean; with speculative decoding where stated | same model only |
 | **E** | colibri (`JustVugg/colibri`) | decode speed as reported by the engine | other E rows |
 
 Caveats that apply to the whole list:
@@ -462,4 +474,4 @@ files.
 | ai395-setup (private) | candidate run, colibri and Qwen3.8 measurements |
 | strix-halo-kernel-lab (private) | lab book, the gains of the lab builds, the first GLM-5.3-Flash load attempt |
 
-Last consolidated: 2026-09-30.
+Last consolidated: 2026-10-01.
