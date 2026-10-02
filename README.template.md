@@ -126,8 +126,8 @@ With MTP on the server (three greedy prompts): Qwen3.6 53/93/103 tok/s (lab) aga
 (upstream), the coder 15/25/30 in both. Upstream has not caught up with the lab's prompt
 kernels (the concat tiling of E040, the packed matmul); generation is the same. The services
 stay on their frozen builds. gpt-oss-120b's perplexity on raw wikitext is about 1100 in both
-builds; that is the model on plain text without its chat format, not a build difference
-(it solves the coding task, see the Mistral note).
+builds, so it is not a build difference; why it is that high on plain text was not checked
+(the model does solve the coding task, see the Mistral note).
 
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.
