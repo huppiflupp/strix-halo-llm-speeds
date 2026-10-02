@@ -148,6 +148,46 @@ not the same model.
 **NPU.** The same Gemma 4 E4B weights are about 5× slower on the NPU than on the iGPU. The
 NPU is a second compute unit that runs while the iGPU is busy, not an accelerator.
 
+## The same model on other machines
+
+Not Strix Halo, and therefore **not in the list or in `models.csv`**: Qwen3.6-35B-A3B on the
+two other machines that serve it under the same alias, measured on 2026-10-02 for comparison.
+The question was whether an old workstation with an 11 GB card can take part as a third
+backend. It can.
+
+| Machine | Quant, file size | llama.cpp, configuration | Generation tok/s | Prompt tok/s |
+|---|---|---|---:|---:|
+| **245k**: Core Ultra 5 245K, RTX 5080 16 GB | UD-IQ3_XXS, 13.1 GB | 4fea119, CUDA, everything in VRAM, MTP | **275** | 4189 |
+| Strix Halo (this list, other harness) | UD-IQ4_XS, 17 GB | lab build, Vulkan, MTP, `-ub 2048` | ≈ 97 (63 without MTP) | 1841 |
+| **x9**: Xeon E5-2697 v2, 64 GB DDR3-1333, RTX 2080 Ti 11 GB | UD-IQ3_XXS, 13.1 GB | bed0a85, CUDA, `--fit on --fit-target 384`, MTP, `-ub 2048` (the service) | **46.8** | 1105 |
+| x9 | UD-IQ3_XXS, 13.1 GB | same, `-ub 512` | 49.2 | 497 |
+| x9 | UD-IQ3_XXS, 13.1 GB | `--fit on` (1024 MiB margin), MTP, `-ub 512` | 50.0 | 453 |
+| x9 | UD-IQ3_XXS, 13.1 GB | `--fit on`, no MTP, `-ub 512` | 45.2 | 516 |
+| x9 | UD-IQ3_XXS, 13.1 GB | `--fit on` (1024 MiB margin), MTP, `-ub 2048`, over the LAN | 39.5 | 1019 |
+| x9 | UD-IQ3_XXS, 13.1 GB | `--fit-target 384`, MTP, `-ub 512`, 24 threads instead of 12 | 35.0 | 489 |
+| x9 | Q4_K_M, 19 GB | `--fit on`, separate MTP head (`-md`), `-ub 512` | 48.4 | 234 |
+| x9 | UD-IQ4_XS, 17 GB | `--fit on`, MTP, `-ub 512` | 39.8 | 304 |
+
+Harness: `llama-server`, `/v1/chat/completions`, temperature 0, prompt cache off, 32,768-token
+context, one warm-up request, then **one run each**: 500 new tokens for a coding prompt
+(generation) and a 7,362-token prompt of C++ source (prompt speed). The Strix Halo row is
+taken from the list above (2,048-token prompt) and was not measured again that day. Script and
+raw results: [`other-machines/`](other-machines/).
+
+What the x9 runs show:
+
+* **The model does not fit into 11 GB, and it hardly matters.** `--fit` puts about 10 GB on
+  the card (10.3 of 11 GB in use) and leaves the remaining expert weights in RAM.
+  With 3B active parameters the CPU share stays small, even on a 2013 Xeon without AVX2 and
+  with DDR3. The estimate before measuring was 8–15 tok/s.
+* **`-ub 2048` doubles prompt speed** (497 → 1105 tok/s) and costs a few percent of generation.
+  With the larger batch the default `--fit` margin of 1024 MiB pushes too much onto the CPU
+  (39.5 tok/s); `--fit-target 384` restores it (46.5–46.8).
+* **12 threads, not 24.** Hyper-threads make generation slower (35 against 49 tok/s).
+* **MTP gains only about 10 %** here (45.2 → 50.0), against roughly 50 % on Strix Halo.
+* **Larger quants mainly cost prompt speed**: more of the model sits in RAM, and prompt
+  processing drops to 234–304 tok/s, while generation stays at 40–48 tok/s.
+
 ## How the numbers were measured
 
 | Code | Harness | Settings | Comparable with |
