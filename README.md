@@ -422,6 +422,21 @@ model occupied 108 of 124 GB and hung the amdgpu driver once; it is a measuremen
 an operating mode. The Lucebox rows with 4 of 6 experts reduce the expert routing and are
 not the same model.
 
+**Mistral-Small-4-119B (2026-10-02).** Stock llama.cpp generates only 0.82 tok/s on Vulkan,
+whatever the settings. The cause is one line: for `mistral4`, `build_moe_ffn` marks the
+`ffn_down_exps` MUL_MAT_ID as F32 precision ("src1 can exceed F16 range"), and the Vulkan
+backend's `supports_op` refuses MUL_MAT_ID at F32 precision. The op falls back to the CPU in
+all 36 layers, and the scheduler copies about 0.9 GB of expert weights per layer and token
+(perf: 33 % memmove, the rest OpenMP barriers). The GPU itself needs only ~34 ms per token.
+Still the same in upstream 254b17730 of 2026-10-02; Metal got its own fix in #29029.
+Letting Vulkan take the op anyway (env-gated one-line patch) gives 35.3 tok/s and 409 tok/s
+prompt, perplexity 4.3256 against 4.3248 on the CPU path (wikitext-2, 4 chunks), so no
+visible overflow on that text. Mistral's own EAGLE draft is EAGLE-1 with two MLA layers in
+FP8, vLLM only; llama.cpp supports EAGLE-3 with Llama layers only. Ministral-3-3B as a draft
+model shares the vocabulary except tokens 36/37 (`[MODEL_SETTINGS]`), needs a relaxed vocab
+check and makes it slower (21–27 tok/s). `ngram-mod` helps on code (59.5 tok/s) and hurts on
+free text (30.7). 92 GiB in use, runs only alone.
+
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.
 
