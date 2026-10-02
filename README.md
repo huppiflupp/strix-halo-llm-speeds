@@ -193,7 +193,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | llama.cpp (upstream 254b17730 + Vulkan MUL_MAT_ID F32 patch) | Vulkan, ngram-mod speculation (no draft model), mean of three prompts | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 42.8 (30.7–59.5) | — | D | 2026-10-02 | 59.5 tok/s on C code, 38.3 on an explanation, 30.7 on a German poem (below the 35 without speculation); greedy outputs drift slightly from the non-speculative run but stay coherent |
-| llama.cpp (upstream 254b17730 + one-line Vulkan patch) | Vulkan, -fa 1, GGML_VK_LAB_MMID_IGNORE_F32=1 (Vulkan accepts MUL_MAT_ID marked F32), no draft model | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 35.3 | 409 (pp512) | C | 2026-10-02 | 43x the stock build; perplexity 4.3256 vs 4.3248 with the CPU path (4 chunks wikitext-2), so no visible overflow there, but only checked on that text; 92 GiB in use, runs only alone |
+| llama.cpp (upstream 254b17730 + one-line Vulkan patch) | Vulkan, -fa 1, GGML_VK_LAB_MMID_IGNORE_F32=1 (Vulkan accepts MUL_MAT_ID marked F32), no draft model | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 35.3 | 409 (pp512) | C | 2026-10-02 | 43x the stock build; perplexity 4.3256 vs 4.3248 with the CPU path (4 chunks wikitext-2), so no visible overflow there, but only checked on that text; 92 GiB in use, runs only alone; deleted 2026-10-02 after losing a coding comparison to gpt-oss-120b (see notes) |
 | llama.cpp (upstream 254b17730 + Vulkan MUL_MAT_ID F32 patch) | Vulkan, draft model Ministral-3-3B Q4_K_M, draft length 2, mean of three prompts | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 26.7 (23.9–29.1) | — | D | 2026-10-02 | slower than without a draft (35); lengths 3 and 5 slower still (14–29); needs a patched vocab check because tokens 36/37 ([MODEL_SETTINGS]) differ; Mistral's own EAGLE draft is EAGLE-1 with MLA layers, vLLM only, and cannot be used in llama.cpp |
 | llama.cpp (upstream 4f31296a9) | Vulkan, -fa 0 and 1 identical, no draft model (Mistral's EAGLE draft is vLLM-only) | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 0.82 | 142 (pp512), 173 at depth 4096 | C | 2026-10-02 | stock llama.cpp: ffn_down_exps runs on the CPU because llama.cpp marks it F32 precision for mistral4 and the Vulkan backend refuses MUL_MAT_ID at F32 precision; the scheduler then copies about 0.9 GB of expert weights per layer per token. See the patched row. |
 
@@ -436,6 +436,17 @@ FP8, vLLM only; llama.cpp supports EAGLE-3 with Llama layers only. Ministral-3-3
 model shares the vocabulary except tokens 36/37 (`[MODEL_SETTINGS]`), needs a relaxed vocab
 check and makes it slower (21–27 tok/s). `ngram-mod` helps on code (59.5 tok/s) and hurts on
 free text (30.7). 92 GiB in use, runs only alone.
+Quality check on 2026-10-02 against gpt-oss-120b, same coding task as the MiMo duel
+(`bench/code-duell`: an expression evaluator with Python semantics, no `eval`/`ast`; 47 fixed
+cases, 500 random expressions; 3 attempts each, at most 16,000 tokens). With
+`reasoning_effort: high` neither model finished: all six attempts used the whole budget for
+thinking and returned no code. With Mistral at `none` (its only other setting; temperature 0.3)
+against gpt-oss at `medium`: Mistral 0 of 3 usable (one stopped mid-function, one had a syntax
+error, one passed 30/47 fixed and 85/500 random cases); gpt-oss 3 of 3 working in 1–2 minutes
+(46–47/47, 449–500/500). Both early stops were reported as a normal end, which might also
+point at an overflow from the patch; not investigated. **Decision: model deleted on
+2026-10-02.** It is slower than gpt-oss-120b (35 against ~50 tok/s), takes 92 instead of
+63 GiB, needs a patched llama.cpp and did clearly worse on the coding task.
 
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.

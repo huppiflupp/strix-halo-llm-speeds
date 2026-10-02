@@ -85,6 +85,17 @@ FP8, vLLM only; llama.cpp supports EAGLE-3 with Llama layers only. Ministral-3-3
 model shares the vocabulary except tokens 36/37 (`[MODEL_SETTINGS]`), needs a relaxed vocab
 check and makes it slower (21–27 tok/s). `ngram-mod` helps on code (59.5 tok/s) and hurts on
 free text (30.7). 92 GiB in use, runs only alone.
+Quality check on 2026-10-02 against gpt-oss-120b, same coding task as the MiMo duel
+(`bench/code-duell`: an expression evaluator with Python semantics, no `eval`/`ast`; 47 fixed
+cases, 500 random expressions; 3 attempts each, at most 16,000 tokens). With
+`reasoning_effort: high` neither model finished: all six attempts used the whole budget for
+thinking and returned no code. With Mistral at `none` (its only other setting; temperature 0.3)
+against gpt-oss at `medium`: Mistral 0 of 3 usable (one stopped mid-function, one had a syntax
+error, one passed 30/47 fixed and 85/500 random cases); gpt-oss 3 of 3 working in 1–2 minutes
+(46–47/47, 449–500/500). Both early stops were reported as a normal end, which might also
+point at an overflow from the patch; not investigated. **Decision: model deleted on
+2026-10-02.** It is slower than gpt-oss-120b (35 against ~50 tok/s), takes 92 instead of
+63 GiB, needs a patched llama.cpp and did clearly worse on the coding task.
 
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.
