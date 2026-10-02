@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 42 models with a measured speed, 188 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 42 models with a measured speed, 189 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -48,26 +48,26 @@ the running service where there is one. Every other measurement of the same mode
 | 20 | DeepSeek-Qwen3-8B | 8B | Q4_1, 4.9 GB | Lemonade (llama.cpp), Vulkan | **40.6** | — | A |
 | 21 | granite4.2 | 8B dense | 5.3 GB | Ollama | **40.4** | — | B |
 | 22 | qwen3-vl:8b-instruct | 8B | Q4_K_M, 6.1 GB | Ollama | **37.3** | — | A |
-| 23 | MiMo-V2.6-Flash-MOPD | 309B MoE, 15B active | AesSedai BPW2.0, 77.4 GB | llama.cpp (master 4f31296a9), Vulkan, DFlash --spec-draft-n-max 3 --spec-draft-p-min 0.4, -ub 2048, mean of three prompts | **34.3 (26.8–39.2)** | pp2048 with -ub 2048 (231 with -ub 512); 310 at depth 16384 | D |
-| 24 | Qwen3.8-27B | 27B dense | Q4_K_M, 16.8 GB | llama.cpp (lab build), Vulkan, with MTP, coder service under agent load | **30–36** | 478.9 | D |
-| 25 | qwen3.5:9b | 9B | Q4_K_M, 6.6 GB | Ollama | **31.5** | — | A |
-| 26 | DeepSeek-V4-Flash-0731 | 284B MoE, 13B active | UD-IQ2_XXS, 91 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, DSpark draft n=3 | **28.91** | 261.7 | D |
-| 27 | Qwen3.8-27B Heretic (DavidAU finetune) | 27B dense | MTP-Q4_K_M, 18.5 GB | llama.cpp (strix fork 10565), Vulkan, with MTP, 400 tokens | **28.3** | 242 | D |
-| 28 | gemma4:12b | 12B dense | Q4_K_M, 7.37 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **25.58** | 741 | C |
-| 29 | GLM-5.3-Flash | 313B MoE, 17B active | UD-IQ1_S, 93 GB | llama.cpp (unsloth branch glm5next, 86ebfef2c), Vulkan, built-in MTP draft length 2, mean of three prompts | **25.0 (22.3–27.4)** | 145 | D |
-| 30 | NousResearch Hermes-4-14B | 14B dense | Q4_K_M, 9 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **23.45** | 694.5 | C |
-| 31 | gemma4:26b-a4b-it-bf16 | 26B MoE, 4B active | F16, 51.7 GB | Ollama | **21.1** | — | A |
-| 32 | gpt-oss-20b-FLM | 21B MoE, ~3.6B active | 14 GB | FastFlowLM on the **NPU**, first run | **19.3** | 21.8–26.3 | D |
-| 33 | phi4-reasoning:plus | 14B dense | 11 GB | Ollama | **18.1** | — | B |
-| 34 | Qwen3.5-122B-A10B | 122B MoE, 10B active | MXFP4, 65 GB | llama.cpp, Vulkan, llama-server | **14.3** | — | B |
-| 35 | muse-glimmer | 30B dense | Q4_K_M, 16.74 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **12.4** | 356.6 | C |
-| 36 | gemma4:31b | 31B dense | Q4_K_M, 19.9 GB | Ollama | **9.7** | — | A |
-| 37 | llama3.1:70b | 70B dense | 43 GB | Ollama | **5.6** | — | B |
-| 38 | nemotron | MoE | 43 GB | Ollama | **5.3** | — | B |
-| 39 | Mistral-Medium-3.5-128B | 128B dense | W4A16 (plezan, compressed-tensors, group 128), 74.6 GB | vLLM 0.30.0+strix (kyuz0/vllm-therock-gfx1151, transformers 5.16.1), ROCm, RDNAHybridW4A16 kernel, EAGLE head (mistralai/Mistral-Medium-3.5-128B-EAGLE, dequantized FP8 -> BF16) draft length 3, mean of four prompts | **3.6 (2.4–4.3)** | — | D |
-| 40 | DeepSeek-V4 REAP (pruned) | MoE | 79 GB | colibri, fully resident | **2.19** | — | E |
-| 41 | GLM-5.2 | 744B MoE | int4, 400 GB | colibri on the **iGPU + NVMe**, tuned: 4500 experts in the Vulkan tier, O_DIRECT | **1.29** | — | E |
-| 42 | Mistral-Small-4-119B-2603 | 119B MoE, 6.5B active | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | llama.cpp (upstream 4f31296a9), Vulkan, -fa 0 and 1 identical, no draft model (Mistral's EAGLE draft is vLLM-only) | **0.82** | 142 (pp512), 173 at depth 4096 | C |
+| 23 | Mistral-Small-4-119B-2603 | 119B MoE, 6.5B active | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | llama.cpp (upstream 254b17730 + one-line Vulkan patch), Vulkan, -fa 1, GGML_VK_LAB_MMID_IGNORE_F32=1 (Vulkan accepts MUL_MAT_ID marked F32), no draft model | **35.3** | 409 (pp512) | C |
+| 24 | MiMo-V2.6-Flash-MOPD | 309B MoE, 15B active | AesSedai BPW2.0, 77.4 GB | llama.cpp (master 4f31296a9), Vulkan, DFlash --spec-draft-n-max 3 --spec-draft-p-min 0.4, -ub 2048, mean of three prompts | **34.3 (26.8–39.2)** | pp2048 with -ub 2048 (231 with -ub 512); 310 at depth 16384 | D |
+| 25 | Qwen3.8-27B | 27B dense | Q4_K_M, 16.8 GB | llama.cpp (lab build), Vulkan, with MTP, coder service under agent load | **30–36** | 478.9 | D |
+| 26 | qwen3.5:9b | 9B | Q4_K_M, 6.6 GB | Ollama | **31.5** | — | A |
+| 27 | DeepSeek-V4-Flash-0731 | 284B MoE, 13B active | UD-IQ2_XXS, 91 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, DSpark draft n=3 | **28.91** | 261.7 | D |
+| 28 | Qwen3.8-27B Heretic (DavidAU finetune) | 27B dense | MTP-Q4_K_M, 18.5 GB | llama.cpp (strix fork 10565), Vulkan, with MTP, 400 tokens | **28.3** | 242 | D |
+| 29 | gemma4:12b | 12B dense | Q4_K_M, 7.37 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **25.58** | 741 | C |
+| 30 | GLM-5.3-Flash | 313B MoE, 17B active | UD-IQ1_S, 93 GB | llama.cpp (unsloth branch glm5next, 86ebfef2c), Vulkan, built-in MTP draft length 2, mean of three prompts | **25.0 (22.3–27.4)** | 145 | D |
+| 31 | NousResearch Hermes-4-14B | 14B dense | Q4_K_M, 9 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **23.45** | 694.5 | C |
+| 32 | gemma4:26b-a4b-it-bf16 | 26B MoE, 4B active | F16, 51.7 GB | Ollama | **21.1** | — | A |
+| 33 | gpt-oss-20b-FLM | 21B MoE, ~3.6B active | 14 GB | FastFlowLM on the **NPU**, first run | **19.3** | 21.8–26.3 | D |
+| 34 | phi4-reasoning:plus | 14B dense | 11 GB | Ollama | **18.1** | — | B |
+| 35 | Qwen3.5-122B-A10B | 122B MoE, 10B active | MXFP4, 65 GB | llama.cpp, Vulkan, llama-server | **14.3** | — | B |
+| 36 | muse-glimmer | 30B dense | Q4_K_M, 16.74 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **12.4** | 356.6 | C |
+| 37 | gemma4:31b | 31B dense | Q4_K_M, 19.9 GB | Ollama | **9.7** | — | A |
+| 38 | llama3.1:70b | 70B dense | 43 GB | Ollama | **5.6** | — | B |
+| 39 | nemotron | MoE | 43 GB | Ollama | **5.3** | — | B |
+| 40 | Mistral-Medium-3.5-128B | 128B dense | W4A16 (plezan, compressed-tensors, group 128), 74.6 GB | vLLM 0.30.0+strix (kyuz0/vllm-therock-gfx1151, transformers 5.16.1), ROCm, RDNAHybridW4A16 kernel, EAGLE head (mistralai/Mistral-Medium-3.5-128B-EAGLE, dequantized FP8 -> BF16) draft length 3, mean of four prompts | **3.6 (2.4–4.3)** | — | D |
+| 41 | DeepSeek-V4 REAP (pruned) | MoE | 79 GB | colibri, fully resident | **2.19** | — | E |
+| 42 | GLM-5.2 | 744B MoE | int4, 400 GB | colibri on the **iGPU + NVMe**, tuned: 4500 experts in the Vulkan tier, O_DIRECT | **1.29** | — | E |
 
 Generation speed is memory-bound on this machine: what counts is how many bytes are read
 per token, not the parameter count in the name. Every model above 40 tok/s is either small
@@ -224,6 +224,16 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (master 4f31296a9) | Vulkan, DFlash n_max 7, p_min 0, -ub 2048 | AesSedai BPW2.0, 77.4 GB | 25.7 | — | D | 2026-09-30 | longer drafts slow it down |
 | llama.cpp (master c85b92c69) | Vulkan, MTP draft length 2, poem | AesSedai BPW2.0, 77.4 GB | 25.07 | — | D | 2026-09-30 | 37 % accepted |
 | llama.cpp (master 4f31296a9) | Vulkan, DFlash draft, poem | AesSedai BPW2.0, 77.4 GB | 23.72 | — | D | 2026-09-30 | 26 % accepted |
+
+</details>
+
+<details>
+<summary><b>Mistral-Small-4-119B-2603</b> — 2 measurements, 0.82 to 35.3 tok/s</summary>
+
+| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
+|---|---|---|---:|---:|---|---|---|
+| llama.cpp (upstream 254b17730 + one-line Vulkan patch) | Vulkan, -fa 1, GGML_VK_LAB_MMID_IGNORE_F32=1 (Vulkan accepts MUL_MAT_ID marked F32), no draft model | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 35.3 | 409 (pp512) | C | 2026-10-02 | 43x the stock build; perplexity 4.3256 vs 4.3248 with the CPU path (4 chunks wikitext-2), so no visible overflow there, but only checked on that text; 92 GiB in use, runs only alone |
+| llama.cpp (upstream 4f31296a9) | Vulkan, -fa 0 and 1 identical, no draft model (Mistral's EAGLE draft is vLLM-only) | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 0.82 | 142 (pp512), 173 at depth 4096 | C | 2026-10-02 | stock llama.cpp: ffn_down_exps runs on the CPU because llama.cpp marks it F32 precision for mistral4 and the Vulkan backend refuses MUL_MAT_ID at F32 precision; the scheduler then copies about 0.9 GB of expert weights per layer per token. See the patched row. |
 
 </details>
 
