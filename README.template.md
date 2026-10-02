@@ -111,6 +111,24 @@ otherwise, so the test does not separate them. **Decision: model deleted on 2026
 advantage over gpt-oss-120b, which is faster (~50 against 31 tok/s) and smaller (63 against
 76 GiB).
 
+**Service builds against upstream (2026-10-02).** The four service models, each with its frozen
+lab build and switches against upstream 254b17730 of the same day (llama-bench, `-fa 1`, the
+service's `-ub`, everything else stopped):
+
+| model | prompt 2048, lab → upstream | generation, lab → upstream | perplexity, lab / upstream |
+|---|---|---|---|
+| Qwen3.6-35B-A3B (hybrid) | 1841 → 1324 (−28 %) | 63.0 → 63.1 | 6.3064 / 6.3064 |
+| Qwen3.8-27B coder (hybrid2) | 450 → 335 (−26 %) | 12.3 → 12.3 | 6.2792 / 6.2810 |
+| gpt-oss-120b (gptoss) | 1399 → 1407 | 53.7 → 53.8 | 1096 / 1112 |
+| Qwen3-30B-A3B (gptoss) | 1642 → 1262 (−23 %) | 94.9 → 93.4 | 6.6888 / 6.6770 |
+
+With MTP on the server (three greedy prompts): Qwen3.6 53/93/103 tok/s (lab) against 58/88/97
+(upstream), the coder 15/25/30 in both. Upstream has not caught up with the lab's prompt
+kernels (the concat tiling of E040, the packed matmul); generation is the same. The services
+stay on their frozen builds. gpt-oss-120b's perplexity on raw wikitext is about 1100 in both
+builds; that is the model on plain text without its chat format, not a build difference
+(it solves the coding task, see the Mistral note).
+
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.
 

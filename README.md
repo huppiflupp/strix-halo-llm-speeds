@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 42 models with a measured speed, 193 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 42 models with a measured speed, 201 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -93,7 +93,7 @@ were not measured here and are therefore not in the list.
 Models with more than one measurement, fastest first. Click a name to open its table.
 
 <details>
-<summary><b>Qwen3.6-35B-A3B</b> — 32 measurements, 10.2 to 100.5 tok/s</summary>
+<summary><b>Qwen3.6-35B-A3B</b> — 34 measurements, 10.2 to 100.5 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
@@ -110,7 +110,9 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | colibri fork (branch decode-gpu) | own GPU decode, with MTP | int4, 22 GB | 77.3 | — | E | 2026-09-28 | — |
 | colibri fork (branch decode-gpu) | own GPU decode, no MTP | int4, 22 GB | 66.9 | — | E | 2026-09-28 | — |
 | llama.cpp master c85b92c69 | Vulkan, llama-bench tg128 / pp512 | UD-IQ4_XS, 17 GB | 63.15 | 1402 | C | 2026-09-29 | new IQ4_XS kernels, no lab patches; with PR #29182 (MoE tile selection) pp512 drops to 1337 |
+| llama.cpp (upstream 254b17730) | Vulkan, llama-bench -fa 1, service ub, pp2048 / tg128 | UD-IQ4_XS, 17 GB | 63.1 | 1324.1 | C | 2026-10-02 | service build vs upstream comparison; perplexity 6.3064 (wikitext-2, 4 chunks) |
 | llama.cpp master bfdc321 | Vulkan, llama-bench tg200 / pp4096 | UD-IQ4_XS, 17 GB | 63.07 | 1037.4 | C | 2026-09-14 | — |
+| llama.cpp (hybrid (3f39e2e39) + lab switches) | Vulkan, llama-bench -fa 1, service ub, pp2048 / tg128 | UD-IQ4_XS, 17 GB | 63 | 1841.4 | C | 2026-10-02 | service build vs upstream comparison; perplexity 6.3064 (wikitext-2, 4 chunks) |
 | llama.cpp (lab build hybrid) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048 | UD-IQ4_XS, 17 GB | 55.59 at depth 16384 | pp512 1445, pp4096 1793, pp16384 1523 | C | 2026-09-29 | — |
 | llama.cpp (lab build) | Vulkan, llama-bench tg128 / pp512 | UD-IQ4_XS, 17 GB | 62.96 | 1460 | C | 2026-09-29 | — |
 | llama.cpp (frozen build) | Vulkan, no MTP, llama-bench tg256 / pp512 | UD-IQ4_XS, 17 GB | 62.7 | 1461 | C | 2026-09-26 | — |
@@ -133,14 +135,16 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3-30B-A3B-Instruct-2507</b> — 10 measurements, 72.71 to 95.82 tok/s</summary>
+<summary><b>Qwen3-30B-A3B-Instruct-2507</b> — 12 measurements, 72.71 to 95.82 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | llama.cpp master c85b92c69 | Vulkan, llama-bench tg128 / pp512, GGML_VK_DISABLE_MMVQ set | IQ4_XS, 16.4 GB | 95.82 | 1795 | C | 2026-09-29 | — |
+| llama.cpp (gptoss (203266830) + lab switches) | Vulkan, llama-bench -fa 1, service ub, pp2048 / tg128 | IQ4_XS, 16.4 GB | 94.9 | 1641.8 | C | 2026-10-02 | service build vs upstream comparison; perplexity 6.6888 (wikitext-2, 4 chunks) |
 | llama.cpp (lab build) | Vulkan, llama-bench tg128 / pp512 | IQ4_XS, 16.4 GB | 94.48 | 1818 | C | 2026-09-29 | — |
 | llama.cpp (lab build) | Vulkan, service | IQ4_XS, 16.4 GB | 94.3 | 2115 | D | 2026-09-22 | prompt: 2048 tokens, empty context |
 | llama.cpp master c85b92c69 | Vulkan, llama-bench tg128 / pp512, new IQ4_XS MMVQ kernels | IQ4_XS, 16.4 GB | 93.49 | 1803 | C | 2026-09-29 | with PR #29182 (MoE tile selection) pp512 drops from 1822 to 1492 |
+| llama.cpp (upstream 254b17730) | Vulkan, llama-bench -fa 1, service ub, pp2048 / tg128 | IQ4_XS, 16.4 GB | 93.4 | 1261.9 | C | 2026-10-02 | service build vs upstream comparison; perplexity 6.6770 (wikitext-2, 4 chunks) |
 | llama.cpp (strix fork) | Vulkan, service | IQ4_XS, 16.4 GB | 88.8 | 1830 | D | 2026-09-21 | prompt: 2048 tokens, empty context |
 | llama.cpp (fork v0.6.4) | Vulkan, governor performance, GPU level high | IQ4_XS, 16.4 GB | 87.57 | 1550.14 | C | 2026-08 | — |
 | llama.cpp mainline | Vulkan, -fa 1 -mmp 0 -b 2048 -ub 512 -t 16 --poll 50 | IQ4_XS, 16.4 GB | 85.53 | 1378.19 | C | 2026-08 | — |
@@ -165,11 +169,13 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>gpt-oss-120b</b> — 15 measurements, 27.7 to 53.7 tok/s</summary>
+<summary><b>gpt-oss-120b</b> — 17 measurements, 27.7 to 53.8 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
+| llama.cpp (upstream 254b17730) | Vulkan, llama-bench -fa 1, service ub, pp2048 / tg128 | MXFP4, 63.4 GB | 53.8 | 1407.4 | C | 2026-10-02 | service build vs upstream comparison; perplexity 1112 (wikitext-2, 4 chunks) |
 | llama.cpp master + PR #27952 | Vulkan, llama-bench | MXFP4, 63.4 GB | 53.7 | 1151.9 | C | 2026-09-21 | pp2048 with -ub 2048: 1463.9 |
+| llama.cpp (gptoss (203266830) + lab switches) | Vulkan, llama-bench -fa 1, service ub, pp2048 / tg128 | MXFP4, 63.4 GB | 53.7 | 1399.3 | C | 2026-10-02 | service build vs upstream comparison; perplexity 1096 (wikitext-2, 4 chunks) |
 | llama.cpp master ec9281505 | Vulkan, llama-bench | MXFP4, 63.4 GB | 53.66 | 783.2 | C | 2026-09-21 | pp2048 with -ub 2048: 1112.2 |
 | llama.cpp (Nathanw1014 fork) | Vulkan, llama-bench | MXFP4, 63.4 GB | 53.6 | 847.2 | C | 2026-09-21 | pp2048 with -ub 2048: 1130.3 |
 | llama.cpp (lab build) | Vulkan, service setting | MXFP4, 63.4 GB | 53.6 | 1459 | D | 2026-09-22 | prompt: 2048 tokens, empty context |
@@ -240,7 +246,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-27B</b> — 20 measurements, 4.28 to 33 tok/s</summary>
+<summary><b>Qwen3.8-27B</b> — 22 measurements, 4.28 to 33 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
@@ -253,6 +259,8 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | Ollama | qwen3.8:latest, first run | Q4_K_M, 17.7 GB | 15.9 | 80.5 | D | 2026-08-16 | — |
 | llama.cpp | Vulkan, no MTP | UD-IQ4_XS | 14.13 | 391 | C | 2026-09-28 | — |
 | llama.cpp | Vulkan, no MTP | Q4_K_M, 16.8 GB | 12.36 | 389 | C | 2026-09-28 | — |
+| llama.cpp (hybrid2 (156d31272) + lab switches) | Vulkan, llama-bench -fa 1, service ub, pp2048 / tg128 | Q4_K_M, 16.8 GB | 12.3 | 450.1 | C | 2026-10-02 | service build vs upstream comparison; perplexity 6.2792 (wikitext-2, 4 chunks) |
+| llama.cpp (upstream 254b17730) | Vulkan, llama-bench -fa 1, service ub, pp2048 / tg128 | Q4_K_M, 16.8 GB | 12.3 | 334.6 | C | 2026-10-02 | service build vs upstream comparison; perplexity 6.2810 (wikitext-2, 4 chunks) |
 | llama.cpp master bfdc321 | Vulkan, llama-bench | Q4_K_M, 16.8 GB | 12.29 | 317.25 | C | 2026-09-14 | — |
 | llama.cpp (strix fork 10565) | Vulkan, MTP off, 400 tokens | Q4_K_M, 16.8 GB | 12.1 | 249 | D | 2026-09-16 | — |
 | llama.cpp 9731ad3 | Vulkan, llama-bench | Q4_K_M, 16.8 GB | 12.09 | 329.4 | C | 2026-08 | — |
@@ -472,6 +480,24 @@ only one of two cities in a single step. Tool-call correctness was perfect for a
 otherwise, so the test does not separate them. **Decision: model deleted on 2026-10-02.** No
 advantage over gpt-oss-120b, which is faster (~50 against 31 tok/s) and smaller (63 against
 76 GiB).
+
+**Service builds against upstream (2026-10-02).** The four service models, each with its frozen
+lab build and switches against upstream 254b17730 of the same day (llama-bench, `-fa 1`, the
+service's `-ub`, everything else stopped):
+
+| model | prompt 2048, lab → upstream | generation, lab → upstream | perplexity, lab / upstream |
+|---|---|---|---|
+| Qwen3.6-35B-A3B (hybrid) | 1841 → 1324 (−28 %) | 63.0 → 63.1 | 6.3064 / 6.3064 |
+| Qwen3.8-27B coder (hybrid2) | 450 → 335 (−26 %) | 12.3 → 12.3 | 6.2792 / 6.2810 |
+| gpt-oss-120b (gptoss) | 1399 → 1407 | 53.7 → 53.8 | 1096 / 1112 |
+| Qwen3-30B-A3B (gptoss) | 1642 → 1262 (−23 %) | 94.9 → 93.4 | 6.6888 / 6.6770 |
+
+With MTP on the server (three greedy prompts): Qwen3.6 53/93/103 tok/s (lab) against 58/88/97
+(upstream), the coder 15/25/30 in both. Upstream has not caught up with the lab's prompt
+kernels (the concat tiling of E040, the packed matmul); generation is the same. The services
+stay on their frozen builds. gpt-oss-120b's perplexity on raw wikitext is about 1100 in both
+builds; that is the model on plain text without its chat format, not a build difference
+(it solves the coding task, see the Mistral note).
 
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.
