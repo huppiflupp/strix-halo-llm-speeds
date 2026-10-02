@@ -126,10 +126,10 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp 9731ad3 | HIP (ROCm), llama-bench tg200 / pp4096 | UD-IQ4_XS, 17 GB | 49.95 | 965.3 | C | 2026-08 | August HIP build computed wrong results on gfx1151 (found 2026-09-14); speed only |
 | llama.cpp (lab build hybrid) | Vulkan + MTP, service llama-qwen36, one 203883-token prompt (needle test, 3 of 3 needles found) | UD-IQ4_XS, 17 GB | generation at 204k depth | average over 204k tokens: 770 s to first token | D | 2026-09-29 | long-context cost: prompt speed falls from ~1500 to 265 tok/s on average |
 | colibri (PR #1338) | Vulkan expert tier, all experts on the GPU | int4, 22 GB | 31.6 | — | E | 2026-09-26 | — |
-| colibri (dev, see config) | CPU only, dev 8001d05a | int4, 22 GB | 29.6 | 48.9 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), two runs each; prompt speed = 583 / TTFT |
-| colibri (dev, see config) | COLI_VULKAN=1, dev 8001d05a with COLI_VK_GEMM_MIN_S=0 (GEMV forced) | int4, 22 GB | 20.9 | 20.3 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), two runs each; prompt speed = 583 / TTFT |
-| colibri (dev, see config) | COLI_VULKAN=1, before #1834 (dev 2b002f43, GEMV only) | int4, 22 GB | 20.5 | 22.9 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), two runs each; prompt speed = 583 / TTFT |
-| colibri (dev, see config) | COLI_VULKAN=1, dev 8001d05a (#1834 tiled GEMM + #1837 prefill per block) | int4, 22 GB | 20.4 | 48.5 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), two runs each; prompt speed = 583 / TTFT; VK_PROF: 470 coop GEMMs in 0.73 s, the rest of the prefill is CPU expert work |
+| colibri (dev, see config) | CPU only, dev 8001d05a | int4, 22 GB | 29.6 | 48.9 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), Performance 120 W, two runs each; prompt speed = 583 / TTFT |
+| colibri (dev, see config) | COLI_VULKAN=1, dev 8001d05a with COLI_VK_GEMM_MIN_S=0 (GEMV forced) | int4, 22 GB | 20.9 | 20.3 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), Performance 120 W, two runs each; prompt speed = 583 / TTFT |
+| colibri (dev, see config) | COLI_VULKAN=1, before #1834 (dev 2b002f43, GEMV only) | int4, 22 GB | 20.5 | 22.9 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), Performance 120 W, two runs each; prompt speed = 583 / TTFT |
+| colibri (dev, see config) | COLI_VULKAN=1, dev 8001d05a (#1834 tiled GEMM + #1837 prefill per block) | int4, 22 GB | 20.4 | 48.5 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), Performance 120 W, two runs each; prompt speed = 583 / TTFT; VK_PROF: 470 coop GEMMs in 0.73 s, the rest of the prefill is CPU expert work |
 | colibri on the **CPU** | CPU only, 16 threads | int4, 22 GB | 19.8 | — | E | 2026-09-26 | — |
 | colibri on the **CPU** | CPU only | int4, 22 GB | 19.7 | — | E | 2026-09-14 | — |
 | FastFlowLM on the **NPU** | qwen3.6-moe-35b-a3b-FLM, first run | 35 GB | 13.4 | 6.9 | D | 2026-08-16 | — |
@@ -506,7 +506,7 @@ builds, so it is not a build difference; why it is that high on plain text was n
 **colibri Qwen3.6 with the tiled Vulkan GEMMs (2026-10-02).** colibri #1834 (tiled GEMM with
 cooperative matrix) and #1837 (prefill projections per block of rows), measured end to end
 with the `Kreuzzelg/qwen36-35b-a3b-colibri-i4-gs64` container, a 583-token prompt and all
-experts in RAM. Vulkan prefill doubles, 22.9 → 48.5 tok/s, and so reaches the CPU's 48.9 but
+experts in RAM, Performance mode (120 W). Vulkan prefill doubles, 22.9 → 48.5 tok/s, and so reaches the CPU's 48.9 but
 not beyond it: the device GEMMs take only 0.73 s of the ~12 s, the rest is routed-expert work
 on the CPU. Generation is 29.6 tok/s on the CPU and 20.4 with Vulkan, the same before and
 after. For comparison, llama.cpp runs the same model at 1841 tok/s prompt and 63 tok/s
