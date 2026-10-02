@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 42 models with a measured speed, 201 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 42 models with a measured speed, 205 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -93,7 +93,7 @@ were not measured here and are therefore not in the list.
 Models with more than one measurement, fastest first. Click a name to open its table.
 
 <details>
-<summary><b>Qwen3.6-35B-A3B</b> — 34 measurements, 10.2 to 100.5 tok/s</summary>
+<summary><b>Qwen3.6-35B-A3B</b> — 38 measurements, 10.2 to 100.5 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
@@ -126,6 +126,10 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp 9731ad3 | HIP (ROCm), llama-bench tg200 / pp4096 | UD-IQ4_XS, 17 GB | 49.95 | 965.3 | C | 2026-08 | August HIP build computed wrong results on gfx1151 (found 2026-09-14); speed only |
 | llama.cpp (lab build hybrid) | Vulkan + MTP, service llama-qwen36, one 203883-token prompt (needle test, 3 of 3 needles found) | UD-IQ4_XS, 17 GB | generation at 204k depth | average over 204k tokens: 770 s to first token | D | 2026-09-29 | long-context cost: prompt speed falls from ~1500 to 265 tok/s on average |
 | colibri (PR #1338) | Vulkan expert tier, all experts on the GPU | int4, 22 GB | 31.6 | — | E | 2026-09-26 | — |
+| colibri (dev, see config) | CPU only, dev 8001d05a | int4, 22 GB | 29.6 | 48.9 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), two runs each; prompt speed = 583 / TTFT |
+| colibri (dev, see config) | COLI_VULKAN=1, dev 8001d05a with COLI_VK_GEMM_MIN_S=0 (GEMV forced) | int4, 22 GB | 20.9 | 20.3 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), two runs each; prompt speed = 583 / TTFT |
+| colibri (dev, see config) | COLI_VULKAN=1, before #1834 (dev 2b002f43, GEMV only) | int4, 22 GB | 20.5 | 22.9 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), two runs each; prompt speed = 583 / TTFT |
+| colibri (dev, see config) | COLI_VULKAN=1, dev 8001d05a (#1834 tiled GEMM + #1837 prefill per block) | int4, 22 GB | 20.4 | 48.5 | E | 2026-10-02 | 583-token prompt, 64 new tokens, --cap 256 (all experts in RAM), two runs each; prompt speed = 583 / TTFT; VK_PROF: 470 coop GEMMs in 0.73 s, the rest of the prefill is CPU expert work |
 | colibri on the **CPU** | CPU only, 16 threads | int4, 22 GB | 19.8 | — | E | 2026-09-26 | — |
 | colibri on the **CPU** | CPU only | int4, 22 GB | 19.7 | — | E | 2026-09-14 | — |
 | FastFlowLM on the **NPU** | qwen3.6-moe-35b-a3b-FLM, first run | 35 GB | 13.4 | 6.9 | D | 2026-08-16 | — |
@@ -498,6 +502,16 @@ kernels (the concat tiling of E040, the packed matmul); generation is the same. 
 stay on their frozen builds. gpt-oss-120b's perplexity on raw wikitext is about 1100 in both
 builds, so it is not a build difference; why it is that high on plain text was not checked
 (the model does solve the coding task, see the Mistral note).
+
+**colibri Qwen3.6 with the tiled Vulkan GEMMs (2026-10-02).** colibri #1834 (tiled GEMM with
+cooperative matrix) and #1837 (prefill projections per block of rows), measured end to end
+with the `Kreuzzelg/qwen36-35b-a3b-colibri-i4-gs64` container, a 583-token prompt and all
+experts in RAM. Vulkan prefill doubles, 22.9 → 48.5 tok/s, and so reaches the CPU's 48.9 but
+not beyond it: the device GEMMs take only 0.73 s of the ~12 s, the rest is routed-expert work
+on the CPU. Generation is 29.6 tok/s on the CPU and 20.4 with Vulkan, the same before and
+after. For comparison, llama.cpp runs the same model at 1841 tok/s prompt and 63 tok/s
+generation (97 with MTP). On the operation level the new kernel is 12.6x faster at M=256
+(see the colibri discussion #1590).
 
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.

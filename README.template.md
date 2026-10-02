@@ -129,6 +129,16 @@ stay on their frozen builds. gpt-oss-120b's perplexity on raw wikitext is about 
 builds, so it is not a build difference; why it is that high on plain text was not checked
 (the model does solve the coding task, see the Mistral note).
 
+**colibri Qwen3.6 with the tiled Vulkan GEMMs (2026-10-02).** colibri #1834 (tiled GEMM with
+cooperative matrix) and #1837 (prefill projections per block of rows), measured end to end
+with the `Kreuzzelg/qwen36-35b-a3b-colibri-i4-gs64` container, a 583-token prompt and all
+experts in RAM. Vulkan prefill doubles, 22.9 → 48.5 tok/s, and so reaches the CPU's 48.9 but
+not beyond it: the device GEMMs take only 0.73 s of the ~12 s, the rest is routed-expert work
+on the CPU. Generation is 29.6 tok/s on the CPU and 20.4 with Vulkan, the same before and
+after. For comparison, llama.cpp runs the same model at 1841 tok/s prompt and 63 tok/s
+generation (97 with MTP). On the operation level the new kernel is 12.6x faster at M=256
+(see the colibri discussion #1590).
+
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.
 
