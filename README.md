@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 42 models with a measured speed, 189 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 42 models with a measured speed, 191 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -188,6 +188,18 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
+<summary><b>Mistral-Small-4-119B-2603</b> — 4 measurements, 0.82 to 42.8 tok/s</summary>
+
+| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
+|---|---|---|---:|---:|---|---|---|
+| llama.cpp (upstream 254b17730 + Vulkan MUL_MAT_ID F32 patch) | Vulkan, ngram-mod speculation (no draft model), mean of three prompts | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 42.8 (30.7–59.5) | — | D | 2026-10-02 | 59.5 tok/s on C code, 38.3 on an explanation, 30.7 on a German poem (below the 35 without speculation); greedy outputs drift slightly from the non-speculative run but stay coherent |
+| llama.cpp (upstream 254b17730 + one-line Vulkan patch) | Vulkan, -fa 1, GGML_VK_LAB_MMID_IGNORE_F32=1 (Vulkan accepts MUL_MAT_ID marked F32), no draft model | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 35.3 | 409 (pp512) | C | 2026-10-02 | 43x the stock build; perplexity 4.3256 vs 4.3248 with the CPU path (4 chunks wikitext-2), so no visible overflow there, but only checked on that text; 92 GiB in use, runs only alone |
+| llama.cpp (upstream 254b17730 + Vulkan MUL_MAT_ID F32 patch) | Vulkan, draft model Ministral-3-3B Q4_K_M, draft length 2, mean of three prompts | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 26.7 (23.9–29.1) | — | D | 2026-10-02 | slower than without a draft (35); lengths 3 and 5 slower still (14–29); needs a patched vocab check because tokens 36/37 ([MODEL_SETTINGS]) differ; Mistral's own EAGLE draft is EAGLE-1 with MLA layers, vLLM only, and cannot be used in llama.cpp |
+| llama.cpp (upstream 4f31296a9) | Vulkan, -fa 0 and 1 identical, no draft model (Mistral's EAGLE draft is vLLM-only) | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 0.82 | 142 (pp512), 173 at depth 4096 | C | 2026-10-02 | stock llama.cpp: ffn_down_exps runs on the CPU because llama.cpp marks it F32 precision for mistral4 and the Vulkan backend refuses MUL_MAT_ID at F32 precision; the scheduler then copies about 0.9 GB of expert weights per layer per token. See the patched row. |
+
+</details>
+
+<details>
 <summary><b>Qwen3.8-Flash-Next</b> — 8 measurements, 6.3 to 41.3 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
@@ -224,16 +236,6 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (master 4f31296a9) | Vulkan, DFlash n_max 7, p_min 0, -ub 2048 | AesSedai BPW2.0, 77.4 GB | 25.7 | — | D | 2026-09-30 | longer drafts slow it down |
 | llama.cpp (master c85b92c69) | Vulkan, MTP draft length 2, poem | AesSedai BPW2.0, 77.4 GB | 25.07 | — | D | 2026-09-30 | 37 % accepted |
 | llama.cpp (master 4f31296a9) | Vulkan, DFlash draft, poem | AesSedai BPW2.0, 77.4 GB | 23.72 | — | D | 2026-09-30 | 26 % accepted |
-
-</details>
-
-<details>
-<summary><b>Mistral-Small-4-119B-2603</b> — 2 measurements, 0.82 to 35.3 tok/s</summary>
-
-| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
-|---|---|---|---:|---:|---|---|---|
-| llama.cpp (upstream 254b17730 + one-line Vulkan patch) | Vulkan, -fa 1, GGML_VK_LAB_MMID_IGNORE_F32=1 (Vulkan accepts MUL_MAT_ID marked F32), no draft model | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 35.3 | 409 (pp512) | C | 2026-10-02 | 43x the stock build; perplexity 4.3256 vs 4.3248 with the CPU path (4 chunks wikitext-2), so no visible overflow there, but only checked on that text; 92 GiB in use, runs only alone |
-| llama.cpp (upstream 4f31296a9) | Vulkan, -fa 0 and 1 identical, no draft model (Mistral's EAGLE draft is vLLM-only) | Beinsezii GGUF-HALO (q8_0, FFN q6_K), 98 GB | 0.82 | 142 (pp512), 173 at depth 4096 | C | 2026-10-02 | stock llama.cpp: ffn_down_exps runs on the CPU because llama.cpp marks it F32 precision for mistral4 and the Vulkan backend refuses MUL_MAT_ID at F32 precision; the scheduler then copies about 0.9 GB of expert weights per layer per token. See the patched row. |
 
 </details>
 
