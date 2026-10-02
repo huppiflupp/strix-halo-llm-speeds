@@ -272,7 +272,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
-| llama.cpp (lab build hybrid, 3f39e2e39) | Vulkan, with MTP, mean of three prompts | UD-Q4_K_XL (unsloth MTP GGUF), 78.6 GB | 31.0 (22.7–37.0) | 523 (pp512) | D | 2026-10-02 | perplexity 3.64 (wikitext-2, 4 chunks); 73–76 GiB in use, runs only alone; without MTP 22.1; coding task (bench/code-duell, thinking on, 16k tokens) 1 of 3 near-perfect (46/47, 499/500), one 34/47 280/500, one out of budget, 7–8 min each at ~32.6 tok/s |
+| llama.cpp (lab build hybrid, 3f39e2e39) | Vulkan, with MTP, mean of three prompts | UD-Q4_K_XL (unsloth MTP GGUF), 78.6 GB | 31.0 (22.7–37.0) | 523 (pp512) | D | 2026-10-02 | perplexity 3.64 (wikitext-2, 4 chunks); 73–76 GiB in use, runs only alone; without MTP 22.1; coding task (bench/code-duell, thinking on, 16k tokens) 1 of 3 near-perfect (46/47, 499/500), one 34/47 280/500, one out of budget, 7–8 min each at ~32.6 tok/s; tool-call test 22/24 like gpt-oss-120b and Qwen3.6; deleted 2026-10-02 (see notes) |
 | llama.cpp (lab build hybrid, 3f39e2e39) | Vulkan, no MTP, llama-bench tg128 / pp512 | UD-Q4_K_XL (unsloth MTP GGUF), 78.6 GB | 22.12 | 523.1 | C | 2026-10-02 | — |
 | llama.cpp | Vulkan, llama-server | MXFP4, 65 GB | 14.3 | — | B | 2026-09-16 | occupies 74 GB when loaded |
 
@@ -458,6 +458,20 @@ error, one passed 30/47 fixed and 85/500 random cases); gpt-oss 3 of 3 working i
 point at an overflow from the patch; not investigated. **Decision: model deleted on
 2026-10-02.** It is slower than gpt-oss-120b (35 against ~50 tok/s), takes 92 instead of
 63 GiB, needs a patched llama.cpp and did clearly worse on the coding task.
+
+**Qwen3.5-122B-A10B (2026-10-02).** Pulled again (unsloth MTP GGUF, UD-Q4_K_XL, 78.6 GB)
+because DGX Spark users call it the best quality model for one Spark, especially for tool
+calls. Perplexity 3.64; 22.1 tok/s without MTP, 31 with MTP (22.7 poem, 33.2 explanation, 37.0
+code), 523 tok/s prompt; 73–76 GiB in use, runs only alone. Coding task (`bench/code-duell`,
+thinking on, 16,000 tokens): 1 of 3 near-perfect (46/47, 499/500), one 34/47 and 280/500, one
+out of budget, 7–8 minutes each; gpt-oss-120b at `medium` solved 3 of 3 in 1–2 minutes.
+Tool-call test (`bench/toolcall`: 12 cases with mock tools, two rounds, everything else
+stopped first): Qwen3.5-122B, gpt-oss-120b and Qwen3.6-35B-A3B all 22/24. Both Qwen models
+sent an e-mail to "Thomas" without an address instead of asking; gpt-oss asked, but fetched
+only one of two cities in a single step. Tool-call correctness was perfect for all three
+otherwise, so the test does not separate them. **Decision: model deleted on 2026-10-02.** No
+advantage over gpt-oss-120b, which is faster (~50 against 31 tok/s) and smaller (63 against
+76 GiB).
 
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.

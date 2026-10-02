@@ -97,6 +97,20 @@ point at an overflow from the patch; not investigated. **Decision: model deleted
 2026-10-02.** It is slower than gpt-oss-120b (35 against ~50 tok/s), takes 92 instead of
 63 GiB, needs a patched llama.cpp and did clearly worse on the coding task.
 
+**Qwen3.5-122B-A10B (2026-10-02).** Pulled again (unsloth MTP GGUF, UD-Q4_K_XL, 78.6 GB)
+because DGX Spark users call it the best quality model for one Spark, especially for tool
+calls. Perplexity 3.64; 22.1 tok/s without MTP, 31 with MTP (22.7 poem, 33.2 explanation, 37.0
+code), 523 tok/s prompt; 73–76 GiB in use, runs only alone. Coding task (`bench/code-duell`,
+thinking on, 16,000 tokens): 1 of 3 near-perfect (46/47, 499/500), one 34/47 and 280/500, one
+out of budget, 7–8 minutes each; gpt-oss-120b at `medium` solved 3 of 3 in 1–2 minutes.
+Tool-call test (`bench/toolcall`: 12 cases with mock tools, two rounds, everything else
+stopped first): Qwen3.5-122B, gpt-oss-120b and Qwen3.6-35B-A3B all 22/24. Both Qwen models
+sent an e-mail to "Thomas" without an address instead of asking; gpt-oss asked, but fetched
+only one of two cities in a single step. Tool-call correctness was perfect for all three
+otherwise, so the test does not separate them. **Decision: model deleted on 2026-10-02.** No
+advantage over gpt-oss-120b, which is faster (~50 against 31 tok/s) and smaller (63 against
+76 GiB).
+
 **gpt-oss-120b.** Generation sits at 85 % of the memory-bandwidth ceiling (62.9 tok/s). The
 EAGLE3 draft model makes it slower.
 
