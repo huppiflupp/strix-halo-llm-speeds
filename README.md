@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 42 models with a measured speed, 218 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 42 models with a measured speed, 218 single measurements, and 6 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -83,6 +83,7 @@ upwards stay below 15 tok/s unless speculative decoding (MTP, DSpark) helps.
 | **Qwen3-VL-235B-A22B-Instruct** | 236B MoE | Q4_K_M, 133 GB | larger than the machine's memory; not downloaded |
 | **MiniMax-M2-AWQ-4bit** | 230B MoE, 10B active | AWQ 4 bit, 115 GB | too large, and AWQ needs vLLM, which does not run usefully on gfx1151; not downloaded |
 | **Kimi K2** | 1T MoE, 32B active | 4 bit, 600 GB | five times the machine's memory; not downloaded |
+| **Qwen3.8-Flash-Next** | 125B MoE, 6B active | UD-IQ4_XS, dense trunk Q6_K (imatrix), 93 GB | KLD 0.035 vs the original (same top 95.1 %, PPL x1.0002). Per-prompt breakdown (STRATA_PREFILL_TIMING, 16k): expert gate/up GEMM 27 %, hyper-connection read 13 %, GDN 10 %, attention 10 %. No gain from STRATA_WMMA_GEMM, PF_HCDOWN, GR_V3, PF_FUSED_TILE, PF_OCC, --spec 3/5, --mtp-window; --expert-cache above 24576 is capped by the profile |
 
 Figures for other models that appear in my notes (GLM-4.5-Air at 25.0 tok/s,
 Qwen3-235B-A22B at 17.2 tok/s) are **third-party measurements** quoted for comparison. They
