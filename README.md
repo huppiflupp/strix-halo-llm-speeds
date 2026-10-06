@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 42 models with a measured speed, 216 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 42 models with a measured speed, 218 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -205,14 +205,16 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-Flash-Next</b> — 12 measurements, 6.3 to 50.8 tok/s</summary>
+<summary><b>Qwen3.8-Flash-Next</b> — 14 measurements, 6.3 to 50.8 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 91.6 GB | no MTP 34.2 | — | D | 2026-10-06 | KLD 0.183 vs the original (same top 88.8 %, PPL x1.106) - too lossy; attn_gate/attn_output most sensitive |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2; experts and PLE table from UD-IQ4_XS, dense Q8_0 tensors requantized to Q5_K | UD-IQ4_XS, dense trunk Q5_K (imatrix), 92.3 GB | no MTP ~31.5 | — | D | 2026-10-06 | KLD 0.070 vs the original file (same top token 93.2 %, PPL x1.016, wikitext 8x2048); original 26.9 / 42.8 tok/s |
 | Strata 82f46a8 (HIP, ROCm 7.14.1) | --spec 4 --mtp (q2_0 draft layer) --lookup-chain 3 --mtp-q4 all, Strix Halo fast switches, --mmap-experts --expert-cache 24576 | UD-IQ4_XS, 93.7 GB | 47.1/41.0/50.1 | pp4k 927, pp16k 1179 | D | 2026-10-06 | same GGUF and token ids as llama.cpp; prompts 2.2-2.9x faster; the default (host arena + auto cache) ran out of memory on the APU, a 6000-slot cache gave 40.5 |
+| Strata 82f46a8 (HIP, ROCm 7.14.1), serve.server | OpenAI server, max context 65536, --spec 4 --mtp --lookup-chain 3 --mtp-q4 all, Strix Halo fast switches, all experts in the GPU cache; real Open WebUI chats with code execution and tool calls | UD-IQ4_XS, 93.7 GB | 43–57 (tool-call rounds highest) | fresh 6.6k / 12.5k prompts in ~6 s / ~11 s; follow-up rounds reuse the prefix and read only the new ~300–550 tokens (1–2 s) | D | 2026-10-06 | ~3.5x faster prompt than llama.cpp in the same chats; 65 GiB; prompt still ~1.6x slower than Qwen3.6 because ~7B parameters are active per token instead of ~3B |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2 | UD-IQ4_XS, 93.7 GB | 41.3 | — | D | 2026-09-28 | occupies 94 GiB, runs only alone |
+| llama.cpp (PR #28243) | Vulkan, llama-server -c 98304, MTP draft length 2, reasoning budget 2000; real Open WebUI chats with web search and tool calls | UD-IQ4_XS, dense trunk Q5_K (imatrix), 92.3 GB | 37.5–42.4 over four requests | web-search prompts of 11.1k / 17.4k tokens: 325 / 315 tok/s (34 s / 55 s before the first token) | D | 2026-10-06 | each web-search round re-reads 6–10k tokens of page text; at ~330 tok/s that is up to a minute per round, which made the chat feel unusable |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2, full context 262144 | UD-IQ4_XS, 93.7 GB | 40.67 | — | D | 2026-09-29 | one prompt; 78.2 GiB GTT + 27.1 GiB host RAM |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 3 | UD-IQ4_XS, 93.7 GB | 40.6 | — | D | 2026-09-28 | — |
 | llama.cpp (PR #28243) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048 | UD-IQ4_XS, 93.7 GB | 23.90 at depth 16384 | pp512 504, pp4096 508, pp16384 462 | C | 2026-09-29 | prompt is 3.3x slower than Qwen3.6 |
