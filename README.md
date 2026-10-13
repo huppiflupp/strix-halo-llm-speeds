@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 48 models with a measured speed, 234 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 48 models with a measured speed, 238 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -59,12 +59,12 @@ the running service where there is one. Every other measurement of the same mode
 | 31 | gemma4:12b | 12B dense | Q4_K_M, 7.37 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **25.58** | 741 | C |
 | 32 | GLM-5.3-Flash | 313B MoE, 17B active | UD-IQ1_S, 93 GB | llama.cpp (unsloth branch glm5next, 86ebfef2c), Vulkan, built-in MTP draft length 2, mean of three prompts | **25.0 (22.3–27.4)** | 145 | D |
 | 33 | NousResearch Hermes-4-14B | 14B dense | Q4_K_M, 9 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **23.45** | 694.5 | C |
-| 34 | gemma4:26b-a4b-it-bf16 | 26B MoE, 4B active | F16, 51.7 GB | Ollama | **21.1** | — | A |
-| 35 | DeepSeek-V4-Flash | 284B MoE, 13B active | IQ1_S-XL (1.73 bpw, community quant teamblobfish), 61.5 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, no draft, llama-bench -fa 1 | **20.52** | pp512 250, pp2048 244 | C |
-| 36 | gpt-oss-20b-FLM | 21B MoE, ~3.6B active | 14 GB | FastFlowLM on the **NPU**, first run | **19.3** | 21.8–26.3 | D |
-| 37 | phi4-reasoning:plus | 14B dense | 11 GB | Ollama | **18.1** | — | B |
-| 38 | Gemma-4-26B-A4B-it | 25.2B MoE, 3.8B active | BF16, 50.5 GB | llama.cpp 4f31296a9, Vulkan, llama-bench -fa 1 -ub 2048 | **14.51** | pp512 514, pp4096 748; at 8k depth tg 13.8 | C |
-| 39 | Gemma-4-31B-it | 31B dense | Q8_0, 32.6 GB | llama.cpp 4f31296a9, Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft (BF16) n=3 | **13.5 / 15.8 / 13.8** | — | D |
+| 34 | Gemma-4-31B-it | 31B dense | Q4_K_M, 17.8 GB | llama.cpp 4f31296a9, Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft Q8_0 n=4 | **no draft 10.7, n=3 22.8** | — | D |
+| 35 | gemma4:26b-a4b-it-bf16 | 26B MoE, 4B active | F16, 51.7 GB | Ollama | **21.1** | — | A |
+| 36 | DeepSeek-V4-Flash | 284B MoE, 13B active | IQ1_S-XL (1.73 bpw, community quant teamblobfish), 61.5 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, no draft, llama-bench -fa 1 | **20.52** | pp512 250, pp2048 244 | C |
+| 37 | gpt-oss-20b-FLM | 21B MoE, ~3.6B active | 14 GB | FastFlowLM on the **NPU**, first run | **19.3** | 21.8–26.3 | D |
+| 38 | phi4-reasoning:plus | 14B dense | 11 GB | Ollama | **18.1** | — | B |
+| 39 | Gemma-4-26B-A4B-it | 25.2B MoE, 3.8B active | BF16, 50.5 GB | llama.cpp 4f31296a9, Vulkan, llama-bench -fa 1 -ub 2048 | **14.51** | pp512 514, pp4096 748; at 8k depth tg 13.8 | C |
 | 40 | muse-glimmer | 30B dense | Q4_K_M, 16.74 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **12.4** | 356.6 | C |
 | 41 | gemma4:31b | 31B dense | Q4_K_M, 19.9 GB | Ollama | **9.7** | — | A |
 | 42 | Gemma-4-12B-it | 12B dense | BF16, 23.8 GB | llama.cpp 4f31296a9, Vulkan, llama-bench -fa 1 -ub 2048 | **8.36** | pp512 178, pp4096 190; at 8k depth tg 8.1 | C |
@@ -407,6 +407,21 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
+<summary><b>Gemma-4-31B-it</b> — 7 measurements, 3.47 to 23.2 tok/s</summary>
+
+| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
+|---|---|---|---:|---:|---|---|---|
+| llama.cpp 4f31296a9 | Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft Q8_0 n=4 | Q4_K_M, 17.8 GB | no draft 10.7, n=3 22.8 | — | D | 2026-10-13 | 31B speed-up sweep 2026-10-13 (~/bench/mu-kandidaten/beschleunigen-31b.sh); hard test and blind grading of Q5_K_M/Q4_K_M on par with Q8_0 |
+| llama.cpp 4f31296a9 | Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft Q8_0 n=3 | Q5_K_M, 20.8 GB | no draft 9.3, n=4 18.9 | — | D | 2026-10-13 | 31B speed-up sweep 2026-10-13 (~/bench/mu-kandidaten/beschleunigen-31b.sh); hard test and blind grading of Q5_K_M/Q4_K_M on par with Q8_0 |
+| llama.cpp 4f31296a9 | Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft Q8_0 n=3 | Q6_K, 24 GB | no draft 7.8, n=4 16.5 | — | D | 2026-10-13 | 31B speed-up sweep 2026-10-13 (~/bench/mu-kandidaten/beschleunigen-31b.sh); hard test and blind grading of Q5_K_M/Q4_K_M on par with Q8_0 |
+| llama.cpp 4f31296a9 | Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft Q8_0 n=5 | Q8_0, 32.6 GB | n=3 14.9, n=4 15.0; BF16 draft n=3 14.4 | — | D | 2026-10-13 | 31B speed-up sweep 2026-10-13 (~/bench/mu-kandidaten/beschleunigen-31b.sh); hard test and blind grading of Q5_K_M/Q4_K_M on par with Q8_0 |
+| llama.cpp 4f31296a9 | Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft (BF16) n=3 | Q8_0, 32.6 GB | 13.5 / 15.8 / 13.8 | — | D | 2026-10-13 | DFlash 10.5, no draft 6.3; GTT peak 38.1 GiB; MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
+| llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | Q8_0, 32.6 GB | 6.38 | pp512 343, pp4096 314; at 8k depth tg 5.95 | C | 2026-10-13 | MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
+| llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | BF16, 61.4 GB | 3.47 | pp512 76, pp4096 93 | C | 2026-10-13 | server with MTP 7.7, DFlash 5.9; MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
+
+</details>
+
+<details>
 <summary><b>gpt-oss-20b-FLM</b> — 2 measurements, 16.2 to 19.3 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
@@ -424,17 +439,6 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp 4f31296a9 | Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft n=3 | BF16, 23.8 GB | 16.8 / 16.9 / 15.7 | — | D | 2026-10-13 | without draft 8.3; GTT peak 27.4 GiB; MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
 | llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | Q8_0, 12.7 GB | 14.36 | pp512 | C | 2026-10-13 | locally quantised from BF16; MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
 | llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | BF16, 23.8 GB | 8.36 | pp512 178, pp4096 190; at 8k depth tg 8.1 | C | 2026-10-13 | no native BF16 on RADV (bf16: 0) -> prefill ~5x slower than Q8_0; MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
-
-</details>
-
-<details>
-<summary><b>Gemma-4-31B-it</b> — 3 measurements, 3.47 to 14.3 tok/s</summary>
-
-| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
-|---|---|---|---:|---:|---|---|---|
-| llama.cpp 4f31296a9 | Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft (BF16) n=3 | Q8_0, 32.6 GB | 13.5 / 15.8 / 13.8 | — | D | 2026-10-13 | DFlash 10.5, no draft 6.3; GTT peak 38.1 GiB; MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
-| llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | Q8_0, 32.6 GB | 6.38 | pp512 343, pp4096 314; at 8k depth tg 5.95 | C | 2026-10-13 | MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
-| llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | BF16, 61.4 GB | 3.47 | pp512 76, pp4096 93 | C | 2026-10-13 | server with MTP 7.7, DFlash 5.9; MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
 
 </details>
 
