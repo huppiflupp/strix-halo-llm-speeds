@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 48 models with a measured speed, 238 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 48 models with a measured speed, 243 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -54,10 +54,10 @@ the running service where there is one. Every other measurement of the same mode
 | 26 | Qwen3.8-27B | 27B dense | Q4_K_M, 16.8 GB | llama.cpp (lab build), Vulkan, with MTP, coder service under agent load | **30–36** | 478.9 | D |
 | 27 | qwen3.5:9b | 9B | Q4_K_M, 6.6 GB | Ollama | **31.5** | — | A |
 | 28 | Qwen3.5-122B-A10B | 122B MoE, 10B active | UD-Q4_K_XL (unsloth MTP GGUF), 78.6 GB | llama.cpp (lab build hybrid, 3f39e2e39), Vulkan, with MTP, mean of three prompts | **31.0 (22.7–37.0)** | 523 (pp512) | D |
-| 29 | DeepSeek-V4-Flash-0731 | 284B MoE, 13B active | UD-IQ2_XXS, 91 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, DSpark draft n=3 | **28.91** | 261.7 | D |
-| 30 | Qwen3.8-27B Heretic (DavidAU finetune) | 27B dense | MTP-Q4_K_M, 18.5 GB | llama.cpp (strix fork 10565), Vulkan, with MTP, 400 tokens | **28.3** | 242 | D |
-| 31 | gemma4:12b | 12B dense | Q4_K_M, 7.37 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **25.58** | 741 | C |
-| 32 | GLM-5.3-Flash | 313B MoE, 17B active | UD-IQ1_S, 93 GB | llama.cpp (unsloth branch glm5next, 86ebfef2c), Vulkan, built-in MTP draft length 2, mean of three prompts | **25.0 (22.3–27.4)** | 145 | D |
+| 29 | GLM-5.3-Flash | 313B MoE, 17B active | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning, Vulkan, MTP draft length 2, probabilistic drafts, 64K draft vocabulary, -c 65536 -ub 1024; temp 1.0, six tasks x2, 600 tokens | **30.4 (25.5–33.7)** | 227 at 2K, 186 at 32K | D |
+| 30 | DeepSeek-V4-Flash-0731 | 284B MoE, 13B active | UD-IQ2_XXS, 91 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, DSpark draft n=3 | **28.91** | 261.7 | D |
+| 31 | Qwen3.8-27B Heretic (DavidAU finetune) | 27B dense | MTP-Q4_K_M, 18.5 GB | llama.cpp (strix fork 10565), Vulkan, with MTP, 400 tokens | **28.3** | 242 | D |
+| 32 | gemma4:12b | 12B dense | Q4_K_M, 7.37 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **25.58** | 741 | C |
 | 33 | NousResearch Hermes-4-14B | 14B dense | Q4_K_M, 9 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **23.45** | 694.5 | C |
 | 34 | Gemma-4-31B-it | 31B dense | Q4_K_M, 17.8 GB | llama.cpp 4f31296a9, Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft Q8_0 n=4 | **no draft 10.7, n=3 22.8** | — | D |
 | 35 | gemma4:26b-a4b-it-bf16 | 26B MoE, 4B active | F16, 51.7 GB | Ollama | **21.1** | — | A |
@@ -313,6 +313,26 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
+<summary><b>GLM-5.3-Flash</b> — 12 measurements, 15.46 to 31.68 tok/s</summary>
+
+| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
+|---|---|---|---:|---:|---|---|---|
+| llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning | Vulkan, same server, 27,981-token prompt | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | 31.68 | 186.6 | D | 2026-10-15 | — |
+| llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning | Vulkan, same server, greedy, the three prompts of 2026-09-29 | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | 31.6 (27.8–34.4) | — | D | 2026-10-15 | the same three prompts gave 22.3–27.4 with UD-IQ1_S on the unpatched branch |
+| llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning | Vulkan, MTP draft length 2, probabilistic drafts, 64K draft vocabulary, -c 65536 -ub 1024; temp 1.0, six tasks x2, 600 tokens | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | 30.4 (25.5–33.7) | 227 at 2K, 186 at 32K | D | 2026-10-15 | reproduces issue #1 (nsbradley88: 29.6 on a 70 W laptop with a 110 GiB IQ3_XXS-based requant); perplexity 3.24, the same as the unchanged release (3.24) and well below UD-IQ1_S (4.49); 98 GiB in use, runs only alone; speed includes thinking tokens; power mode not recorded |
+| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, MTP draft length 2, C code | UD-IQ1_S, 93 GB | 27.4 | — | D | 2026-09-29 | — |
+| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, MTP draft length 2, explanation | UD-IQ1_S, 93 GB | 25.3 | — | D | 2026-09-29 | — |
+| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, built-in MTP draft length 2, mean of three prompts | UD-IQ1_S, 93 GB | 25.0 (22.3–27.4) | 145 | D | 2026-09-29 | needs -fa off; 95 GiB in use with MTP, runs only alone; perplexity 4.49; prompt figure from llama-bench pp512; the first load attempt on 2026-09-21 failed |
+| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, MTP draft length 2, poem | UD-IQ1_S, 93 GB | 22.3 | — | D | 2026-09-29 | — |
+| llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning | Vulkan, no MTP, llama-bench pp2048 / tg128 -ub 1024 | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | 22.11 | 227.26 | C | 2026-10-15 | — |
+| llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning | Vulkan, no MTP, llama-bench at context depth 32768 | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | 20.85 | 186.06 | C | 2026-10-15 | — |
+| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, llama-bench pp512 / tg128 | UD-IQ1_S, 93 GB | 17.63 | 145 | C | 2026-09-29 | — |
+| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, no MTP, llama-server, three prompts | UD-IQ1_S, 93 GB | 17.0–17.1 | — | D | 2026-09-29 | 89 GiB in use |
+| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, llama-bench at context depth 4096 | UD-IQ1_S, 93 GB | 15.46 | 131.5 | C | 2026-09-29 | — |
+
+</details>
+
+<details>
 <summary><b>Qwen3.5-122B-A10B</b> — 3 measurements, 14.3 to 31 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
@@ -366,21 +386,6 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (strix fork 10565) | Vulkan, MTP off, 400 tokens | MTP-Q4_K_M, 18.5 GB | 11.2 | 247 | D | 2026-09-16 | — |
 | llama.cpp (strix fork 10707) | Vulkan, MTP off, 400 tokens | MTP-Q4_K_M, 18.5 GB | 11.2 | 348 | D | 2026-09-16 | — |
 | Ollama 0.34.1 | MTP off, 400 tokens | MTP-Q4_K_M, 18.5 GB | 10.9 | 281 | D | 2026-09-16 | — |
-
-</details>
-
-<details>
-<summary><b>GLM-5.3-Flash</b> — 7 measurements, 15.46 to 27.4 tok/s</summary>
-
-| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
-|---|---|---|---:|---:|---|---|---|
-| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, MTP draft length 2, C code | UD-IQ1_S, 93 GB | 27.4 | — | D | 2026-09-29 | — |
-| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, MTP draft length 2, explanation | UD-IQ1_S, 93 GB | 25.3 | — | D | 2026-09-29 | — |
-| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, built-in MTP draft length 2, mean of three prompts | UD-IQ1_S, 93 GB | 25.0 (22.3–27.4) | 145 | D | 2026-09-29 | needs -fa off; 95 GiB in use with MTP, runs only alone; perplexity 4.49; prompt figure from llama-bench pp512; the first load attempt on 2026-09-21 failed |
-| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, MTP draft length 2, poem | UD-IQ1_S, 93 GB | 22.3 | — | D | 2026-09-29 | — |
-| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, llama-bench pp512 / tg128 | UD-IQ1_S, 93 GB | 17.63 | 145 | C | 2026-09-29 | — |
-| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, no MTP, llama-server, three prompts | UD-IQ1_S, 93 GB | 17.0–17.1 | — | D | 2026-09-29 | 89 GiB in use |
-| llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, llama-bench at context depth 4096 | UD-IQ1_S, 93 GB | 15.46 | 131.5 | C | 2026-09-29 | — |
 
 </details>
 
@@ -687,4 +692,4 @@ files.
 | ai395-setup (private) | candidate run, colibri and Qwen3.8 measurements |
 | strix-halo-kernel-lab (private) | lab book, the gains of the lab builds, the first GLM-5.3-Flash load attempt |
 
-Last consolidated: 2026-10-13.
+Last consolidated: 2026-10-15.
