@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 48 models with a measured speed, 246 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 48 models with a measured speed, 248 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -286,13 +286,14 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-27B</b> — 22 measurements, 4.28 to 33 tok/s</summary>
+<summary><b>Qwen3.8-27B</b> — 23 measurements, 4.28 to 33 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | llama.cpp (lab build) | Vulkan, with MTP, coder service under agent load | Q4_K_M, 16.8 GB | 30–36 | 478.9 | D | 2026-09-22 | occupies 76 GiB with the packed matmul copy; prompt: llama-bench -ub 512 |
 | llama.cpp (strix fork 10565) | Vulkan, with MTP, 400 tokens | Q4_K_M, 16.8 GB | 27.9 | 244 | D | 2026-09-16 | — |
 | Ollama | qwen3.8:27b with MTP, candidate run | Q4_K_M, 17 GB | 25.3 | — | B | 2026-09-16 | — |
+| llama.cpp (lab build hybrid2) | Vulkan, MTP draft length 4, coder service settings, code duel (expression evaluator, thinking budget 8000, temp 0.6), 5 runs | Q4_K_M, 16.8 GB | 21.7 (20.6–22.8) | — | D | 2026-10-17 | 4 of 5 solutions pass all 547 tests (once 451/500: max() with one argument); draft acceptance 0.49 while thinking; GLM-5.3-Flash on the same task 2 of 5 |
 | llama.cpp (strix fork 10707) | Vulkan, with MTP, 400 tokens | Q4_K_M, 16.8 GB | 20.3 | 341 | D | 2026-09-16 | — |
 | Ollama 0.34.1 | with MTP, 400 tokens | Q4_K_M, 16.8 GB | 19.5 | 288 | D | 2026-09-16 | — |
 | Ollama | qwen3.8:latest, smoke test | Q4_K_M, 17.7 GB | 18.2 | — | A | 2026-09-15 | — |
@@ -316,13 +317,14 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>GLM-5.3-Flash</b> — 12 measurements, 15.46 to 31.68 tok/s</summary>
+<summary><b>GLM-5.3-Flash</b> — 13 measurements, 15.46 to 31.68 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning | Vulkan, same server, 27,981-token prompt | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | 31.68 | 186.6 | D | 2026-10-15 | — |
 | llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning | Vulkan, same server, greedy, the three prompts of 2026-09-29 | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | 31.6 (27.8–34.4) | — | D | 2026-10-15 | the same three prompts gave 22.3–27.4 with UD-IQ1_S on the unpatched branch |
 | llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning | Vulkan, MTP draft length 2, probabilistic drafts, 64K draft vocabulary, -c 65536 -ub 1024; temp 1.0, six tasks x2, 600 tokens | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | 30.4 (25.5–33.7) | 227 at 2K, 186 at 32K | D | 2026-10-15 | reproduces issue #1 (nsbradley88: 29.6 on a 70 W laptop with a 110 GiB IQ3_XXS-based requant); perplexity 3.24, the same as the unchanged release (3.24) and well below UD-IQ1_S (4.49); 98 GiB in use, runs only alone; speed includes thinking tokens; power mode not recorded |
+| llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning | Vulkan, MTP draft length 2, probabilistic drafts, code duel (expression evaluator, thinking budget 8000, temp 0.6), 5 runs | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | 29.9 (29.3–30.5) | — | D | 2026-10-17 | 2 of 5 solutions pass all 547 tests (others: max() with one argument, multi-argument calls broken, abs/min/max missing); draft acceptance 0.71; Qwen3.8-27B on the same task 4 of 5; files deleted afterwards |
 | llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, MTP draft length 2, C code | UD-IQ1_S, 93 GB | 27.4 | — | D | 2026-09-29 | — |
 | llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, MTP draft length 2, explanation | UD-IQ1_S, 93 GB | 25.3 | — | D | 2026-09-29 | — |
 | llama.cpp (unsloth branch glm5next, 86ebfef2c) | Vulkan, built-in MTP draft length 2, mean of three prompts | UD-IQ1_S, 93 GB | 25.0 (22.3–27.4) | 145 | D | 2026-09-29 | needs -fa off; 95 GiB in use with MTP, runs only alone; perplexity 4.49; prompt figure from llama-bench pp512; the first load attempt on 2026-09-21 failed |
