@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 48 models with a measured speed, 248 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 50 models with a measured speed, 255 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -55,25 +55,27 @@ the running service where there is one. Every other measurement of the same mode
 | 27 | qwen3.5:9b | 9B | Q4_K_M, 6.6 GB | Ollama | **31.5** | — | A |
 | 28 | Qwen3.5-122B-A10B | 122B MoE, 10B active | UD-Q4_K_XL (unsloth MTP GGUF), 78.6 GB | llama.cpp (lab build hybrid, 3f39e2e39), Vulkan, with MTP, mean of three prompts | **31.0 (22.7–37.0)** | 523 (pp512) | D |
 | 29 | GLM-5.3-Flash | 313B MoE, 17B active | UD-IQ2_XXS + a4 requant (non-expert Q5_K/Q6_K to Q4_K), 101 GB | llama.cpp efe3626b1 + 23 GLM patches from nsbradley88/halo-tuning, Vulkan, MTP draft length 2, probabilistic drafts, 64K draft vocabulary, -c 65536 -ub 1024; temp 1.0, six tasks x2, 600 tokens | **30.4 (25.5–33.7)** | 227 at 2K, 186 at 32K | D |
-| 30 | DeepSeek-V4-Flash-0731 | 284B MoE, 13B active | UD-IQ2_XXS, 91 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, DSpark draft n=3 | **28.91** | 261.7 | D |
-| 31 | Qwen3.8-27B Heretic (DavidAU finetune) | 27B dense | MTP-Q4_K_M, 18.5 GB | llama.cpp (strix fork 10565), Vulkan, with MTP, 400 tokens | **28.3** | 242 | D |
-| 32 | gemma4:12b | 12B dense | Q4_K_M, 7.37 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **25.58** | 741 | C |
-| 33 | NousResearch Hermes-4-14B | 14B dense | Q4_K_M, 9 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **23.45** | 694.5 | C |
-| 34 | Gemma-4-31B-it | 31B dense | Q4_K_M, 17.8 GB | llama.cpp 4f31296a9, Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft Q8_0 n=4 | **no draft 10.7, n=3 22.8** | — | D |
-| 35 | gemma4:26b-a4b-it-bf16 | 26B MoE, 4B active | F16, 51.7 GB | Ollama | **21.1** | — | A |
-| 36 | DeepSeek-V4-Flash | 284B MoE, 13B active | IQ1_S-XL (1.73 bpw, community quant teamblobfish), 61.5 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, no draft, llama-bench -fa 1 | **20.52** | pp512 250, pp2048 244 | C |
-| 37 | gpt-oss-20b-FLM | 21B MoE, ~3.6B active | 14 GB | FastFlowLM on the **NPU**, first run | **19.3** | 21.8–26.3 | D |
-| 38 | phi4-reasoning:plus | 14B dense | 11 GB | Ollama | **18.1** | — | B |
-| 39 | Gemma-4-26B-A4B-it | 25.2B MoE, 3.8B active | BF16, 50.5 GB | llama.cpp 4f31296a9, Vulkan, llama-bench -fa 1 -ub 2048 | **14.51** | pp512 514, pp4096 748; at 8k depth tg 13.8 | C |
-| 40 | muse-glimmer | 30B dense | Q4_K_M, 16.74 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **12.4** | 356.6 | C |
-| 41 | gemma4:31b | 31B dense | Q4_K_M, 19.9 GB | Ollama | **9.7** | — | A |
-| 42 | Gemma-4-12B-it | 12B dense | BF16, 23.8 GB | llama.cpp 4f31296a9, Vulkan, llama-bench -fa 1 -ub 2048 | **8.36** | pp512 178, pp4096 190; at 8k depth tg 8.1 | C |
-| 43 | Granite-4.2-30B | 30B dense | Q8_0, 31.1 GB | llama.cpp 4f31296a9, Vulkan, llama-bench -fa 1 -ub 2048 | **6.75** | pp512 359, pp4096 255 | C |
-| 44 | llama3.1:70b | 70B dense | 43 GB | Ollama | **5.6** | — | B |
-| 45 | nemotron | MoE | 43 GB | Ollama | **5.3** | — | B |
-| 46 | Mistral-Medium-3.5-128B | 128B dense | W4A16 (plezan, compressed-tensors, group 128), 74.6 GB | vLLM 0.30.0+strix (kyuz0/vllm-therock-gfx1151, transformers 5.16.1), ROCm, RDNAHybridW4A16 kernel, EAGLE head (mistralai/Mistral-Medium-3.5-128B-EAGLE, dequantized FP8 -> BF16) draft length 3, mean of four prompts | **3.6 (2.4–4.3)** | — | D |
-| 47 | DeepSeek-V4 REAP (pruned) | MoE | 79 GB | colibri, fully resident | **2.19** | — | E |
-| 48 | GLM-5.2 | 744B MoE | int4, 400 GB | colibri on the **iGPU + NVMe**, tuned: 4500 experts in the Vulkan tier, O_DIRECT | **1.29** | — | E |
+| 30 | Nemotron-3.5-Bolt-74B-A9B | 74B hybrid MoE (Mamba), 9B active | IQ2_XXS (NVIDIA release mix: experts IQ2_XXS, Mamba in/out NVFP4, attention Q8_0), 22 GB | llama.cpp 9b56ccf00, Vulkan, no draft, llama-bench -fa 1 | **29.0 through the server (3 German prompts, no thinking)** | pp512 529, pp2048 532 | C |
+| 31 | DeepSeek-V4-Flash-0731 | 284B MoE, 13B active | UD-IQ2_XXS, 91 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, DSpark draft n=3 | **28.91** | 261.7 | D |
+| 32 | Qwen3.8-27B Heretic (DavidAU finetune) | 27B dense | MTP-Q4_K_M, 18.5 GB | llama.cpp (strix fork 10565), Vulkan, with MTP, 400 tokens | **28.3** | 242 | D |
+| 33 | gemma4:12b | 12B dense | Q4_K_M, 7.37 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **25.58** | 741 | C |
+| 34 | NousResearch Hermes-4-14B | 14B dense | Q4_K_M, 9 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **23.45** | 694.5 | C |
+| 35 | Gemma-4-31B-it | 31B dense | Q4_K_M, 17.8 GB | llama.cpp 4f31296a9, Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft Q8_0 n=4 | **no draft 10.7, n=3 22.8** | — | D |
+| 36 | gemma4:26b-a4b-it-bf16 | 26B MoE, 4B active | F16, 51.7 GB | Ollama | **21.1** | — | A |
+| 37 | DeepSeek-V4-Flash | 284B MoE, 13B active | IQ1_S-XL (1.73 bpw, community quant teamblobfish), 61.5 GB | llama.cpp (Nathanw1014 fork, source build), Vulkan, no draft, llama-bench -fa 1 | **20.52** | pp512 250, pp2048 244 | C |
+| 38 | gpt-oss-20b-FLM | 21B MoE, ~3.6B active | 14 GB | FastFlowLM on the **NPU**, first run | **19.3** | 21.8–26.3 | D |
+| 39 | phi4-reasoning:plus | 14B dense | 11 GB | Ollama | **18.1** | — | B |
+| 40 | Nemotron-3.5-Super-VL-120B-A12B | 124B hybrid MoE (Mamba), 12B active | UD-Q4_K_XL, 86.9 GB | llama.cpp 9b56ccf00, Vulkan, no draft, llama-bench -fa 1 | **—** | pp512 379, pp2048 330 | C |
+| 41 | Gemma-4-26B-A4B-it | 25.2B MoE, 3.8B active | BF16, 50.5 GB | llama.cpp 4f31296a9, Vulkan, llama-bench -fa 1 -ub 2048 | **14.51** | pp512 514, pp4096 748; at 8k depth tg 13.8 | C |
+| 42 | muse-glimmer | 30B dense | Q4_K_M, 16.74 GB | llama.cpp 9731ad3, Vulkan, llama-bench | **12.4** | 356.6 | C |
+| 43 | gemma4:31b | 31B dense | Q4_K_M, 19.9 GB | Ollama | **9.7** | — | A |
+| 44 | Gemma-4-12B-it | 12B dense | BF16, 23.8 GB | llama.cpp 4f31296a9, Vulkan, llama-bench -fa 1 -ub 2048 | **8.36** | pp512 178, pp4096 190; at 8k depth tg 8.1 | C |
+| 45 | Granite-4.2-30B | 30B dense | Q8_0, 31.1 GB | llama.cpp 4f31296a9, Vulkan, llama-bench -fa 1 -ub 2048 | **6.75** | pp512 359, pp4096 255 | C |
+| 46 | llama3.1:70b | 70B dense | 43 GB | Ollama | **5.6** | — | B |
+| 47 | nemotron | MoE | 43 GB | Ollama | **5.3** | — | B |
+| 48 | Mistral-Medium-3.5-128B | 128B dense | W4A16 (plezan, compressed-tensors, group 128), 74.6 GB | vLLM 0.30.0+strix (kyuz0/vllm-therock-gfx1151, transformers 5.16.1), ROCm, RDNAHybridW4A16 kernel, EAGLE head (mistralai/Mistral-Medium-3.5-128B-EAGLE, dequantized FP8 -> BF16) draft length 3, mean of four prompts | **3.6 (2.4–4.3)** | — | D |
+| 49 | DeepSeek-V4 REAP (pruned) | MoE | 79 GB | colibri, fully resident | **2.19** | — | E |
+| 50 | GLM-5.2 | 744B MoE | int4, 400 GB | colibri on the **iGPU + NVMe**, tuned: 4500 experts in the Vulkan tier, O_DIRECT | **1.29** | — | E |
 
 Generation speed is memory-bound on this machine: what counts is how many bytes are read
 per token, not the parameter count in the name. Every model above 40 tok/s is either small
@@ -99,16 +101,18 @@ were not measured here and are therefore not in the list.
 Models with more than one measurement, fastest first. Click a name to open its table.
 
 <details>
-<summary><b>Qwen3.6-35B-A3B</b> — 48 measurements, 10.2 to 124.2 tok/s</summary>
+<summary><b>Qwen3.6-35B-A3B</b> — 52 measurements, 10.2 to 124.2 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | colibri (PRs #1950/#1952/#1940 stacked) | Vulkan chain, device MoE, W4A8, int4 grid 5/0.8, MTP from the checkpoint (Q36_MTP=1, 5 drafts, p_min 0.85, 48k vocab list) | int4 + converted MTP head, 22 GB | 124.1–124.3 | — | E | 2026-10-06 | llama.cpp with MTP on the same prompts 86.9; text byte-identical to plain decoding |
+| llama.cpp (lab build hybrid-port2) | service 8090 flags (-fa 1 -ub 2048, draft-mtp n-max 2, 48k draft vocab), /completion with the Strata token ids, greedy | UD-IQ4_XS experts, dense trunk IQ4_XS, 17.3 GB | 119.7/121.1/128.1; 84.8 after a 16k prompt | pp4k 1457, pp16k 1510 | D | 2026-10-21 | same-run reference for the Strata comparison: 1.5x Strata's generation, 1.7-2.2x its prompt |
 | llama.cpp (lab build hybrid-port2) | Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 122.3 (hybrid-voc 116.6, hybrid-port 114.3) | 1889, llama-bench pp2048 (hybrid 1684); at depth 16384 1348 (hybrid 1181) | D | 2026-10-16 | kernel lab E051-E053: vocab subset + halo-tuning FA patch 0003, IQ3_S int8 MMQ 0007, GDN_CACHE fusion (glm/0009) and RMS_NORM_SCALE fusion (glm/0010) ported; perplexity 5.7849 (5.7829 without the int8 prefill); replies byte-identical to hybrid-port |
 | llama.cpp (lab build hybrid) | Vulkan, MTP draft length 3 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 103.8 | — | D | 2026-10-06 | original file 89.5 tok/s |
 | llama.cpp (lab build hybrid-port2) | Vulkan, MTP draft length 2, 48k vocabulary subset, family chat service (-np 2, vision projector) | UD-IQ4_XS, 17 GB | 101.6 (hybrid 88.5, hybrid-voc 95.5, hybrid-port 94.9) | — | D | 2026-10-16 | original file without the IQ4_XS trunk; kernel lab E051-E053 |
 | llama.cpp master c85b92c69 + PR #25666 | Vulkan, with MTP, greedy, C code | UD-IQ4_XS, 17 GB | 100.5 | — | D | 2026-09-29 | PR #25666: no MMVQ on spec-decode steps; one prompt, not a mean |
 | llama.cpp (lab build) | Vulkan, with MTP, family chat service | UD-IQ4_XS, 17 GB | ≈ 97 | 1839 | D | 2026-09-22 | prompt: 2048 tokens, empty context |
+| llama.cpp (lab build hybrid-port2) | Vulkan, service flags (-fa 1 -ub 2048, draft-mtp n-max 2, 48k draft vocab), /completion with the Strata token ids, greedy | UD-Q4_K_XL (Unsloth MTP GGUF), 22.9 GB | 91.6/100.3/94.2; 77.3 after a 16k prompt | pp4k 1447, pp16k 1530 | D | 2026-10-21 | reference for the Strata rows on the same file |
 | llama.cpp master c85b92c69 | Vulkan, with MTP, greedy, explanation | UD-IQ4_XS, 17 GB | 91.7 | — | D | 2026-09-29 | — |
 | llama.cpp master c85b92c69 | Vulkan, with MTP, greedy, C code | UD-IQ4_XS, 17 GB | 91.6 | — | D | 2026-09-29 | — |
 | llama.cpp master c85b92c69 + PR #25666 | Vulkan, with MTP, greedy, explanation | UD-IQ4_XS, 17 GB | 91.5 | — | D | 2026-09-29 | — |
@@ -117,6 +121,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (lab build hybrid-port2) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048, pp2048 / tg128 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 82.76; 70.45 at depth 16384 | 1889; 1348 at depth 16384 | C | 2026-10-16 | tg128 -1 % vs hybrid (83.8): graph_optimize keeps RMS_NORM and SCALE together; with MTP the same order gains |
 | colibri (PR #1952 stacked) | Vulkan chain, device MoE, W4A8, int4 grid, no MTP | int4, 22 GB | 81.0–83.8 | TTFT 4k 3.5 s, 16k 19.0 s (dev: 8.96 / 84.4 s) | E | 2026-10-06 | dev without the PRs: 44.0 tok/s (int4), 35.8 (int8) |
 | llama.cpp (strix fork 10565) | Vulkan, MTP draft length 2 | UD-IQ4_XS, 17 GB | 81.9 | — | D | 2026-09-18 | — |
+| Strata v0.2.2 (011c9e60, HIP, ROCm 7.14.1), own qwen35 engine path | --mtp 2 (setup default), greedy, every routed expert in VRAM, prompt chunk 4096; same token ids as the llama.cpp rows | UD-Q4_K_XL (Unsloth MTP GGUF), 22.9 GB | 81.7/82.7/77.6 (en/de/code); 31.5 after a 16k prompt | pp4k 872, pp16k 695 | D | 2026-10-21 | acceptance 74/75/68 %; llama.cpp on the same file is ~18 % faster in generation and ~1.7x in prompt; the release's R9700 gains (+42 % vs llama.cpp) do not carry over to gfx1151 |
 | llama.cpp (lab build hybrid) | Vulkan, no MTP; experts from UD-IQ4_XS, dense Q8_0 tensors requantized to IQ4_XS (kernel lab E050) | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 80.6 | — | D | 2026-10-06 | perplexity 5.783 vs 5.691 (+1.6 %, wikitext 40x2048); original file 61.6 tok/s |
 | llama.cpp (strix fork 10565) | Vulkan, MTP draft length 3 | UD-IQ4_XS, 17 GB | 80.2 | — | D | 2026-09-18 | — |
 | llama.cpp (strix fork 10565) | Vulkan, MTP draft length 4 | UD-IQ4_XS, 17 GB | 78.6 | — | D | 2026-09-18 | — |
@@ -136,6 +141,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (strix fork 10565) | Vulkan, MTP off | UD-IQ4_XS, 17 GB | 61.7 | — | D | 2026-09-18 | — |
 | llama.cpp master c85b92c69 | Vulkan, with MTP, greedy, poem | UD-IQ4_XS, 17 GB | 61.3 | — | D | 2026-09-29 | — |
 | llama.cpp master c85b92c69 + PR #25666 | Vulkan, with MTP, greedy, poem | UD-IQ4_XS, 17 GB | 58.6 | — | D | 2026-09-29 | — |
+| Strata v0.2.2 (011c9e60, HIP, ROCm 7.14.1), own qwen35 engine path | --mtp 0, greedy, every routed expert in VRAM | UD-Q4_K_XL (Unsloth MTP GGUF), 22.9 GB | 54.7/54.8/54.8; 31.1 after a 16k prompt | pp4k 883, pp16k 718 | D | 2026-10-21 | no draft layer |
 | Ollama | qwen3.6:latest | Q4_K_M, 23.9 GB | 54.5 | — | A | 2026-09-15 | — |
 | Ollama | qwen3.6-en | Q4_K_M, 23.9 GB | 54 | — | A | 2026-09-15 | — |
 | llama.cpp master bfdc321 | HIP (ROCm), llama-bench tg200 / pp4096 | UD-IQ4_XS, 17 GB | 50.36 | 966.9 | C | 2026-09-14 | — |
@@ -227,13 +233,14 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-Flash-Next</b> — 15 measurements, 6.3 to 50.8 tok/s</summary>
+<summary><b>Qwen3.8-Flash-Next</b> — 16 measurements, 6.3 to 50.8 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 91.6 GB | no MTP 34.2 | — | D | 2026-10-06 | KLD 0.183 vs the original (same top 88.8 %, PPL x1.106) - too lossy; attn_gate/attn_output most sensitive |
 | Strata 82f46a8 (HIP, ROCm 7.14.1), serve.server | --no-prefill-borrow (prompt buffers of their own instead of lent expert-cache slots), otherwise as the Strata chat row; OpenAI server, three distinct ~15k-token prompts and two 600-token answers per run, two interleaved rounds | UD-IQ4_XS, dense trunk Q6_K (imatrix), 93 GB | de 38.4 / code 60.8 incl. prompt; same as before within noise (code +2.7 %) | vs 1,099 for the same server with the original file and borrowing (+5.2 %); no experts re-copied after each prompt | D | 2026-10-06 | KLD 0.035 vs the original (same top 95.1 %, PPL x1.0002). Per-prompt breakdown (STRATA_PREFILL_TIMING, 16k): expert gate/up GEMM 27 %, hyper-connection read 13 %, GDN 10 %, attention 10 %. No gain from STRATA_WMMA_GEMM, PF_HCDOWN, GR_V3, PF_FUSED_TILE, PF_OCC, --spec 3/5, --mtp-window; --expert-cache above 24576 is capped by the profile |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2; experts and PLE table from UD-IQ4_XS, dense Q8_0 tensors requantized to Q5_K | UD-IQ4_XS, dense trunk Q5_K (imatrix), 92.3 GB | no MTP ~31.5 | — | D | 2026-10-06 | KLD 0.070 vs the original file (same top token 93.2 %, PPL x1.016, wikitext 8x2048); original 26.9 / 42.8 tok/s |
+| Strata v0.2.2 (011c9e60, HIP, ROCm 7.14.1) | CLI, same token ids and switches as the 2026-10-06 rows, --no-prefill-borrow, --spec 4 --mtp --lookup-chain 3 --mtp-q4 all, all experts in the GPU cache; interleaved old/new/new/old | UD-IQ4_XS, dense trunk Q6_K (imatrix), 93 GB | 48.9/42.4/50.4 (en/de/code, medians of 4) | pp4k 956, pp16k 1263 | D | 2026-10-21 | no change vs 82f46a8 in the same interleaved run (49.9/41.8/51.7, pp4k 904, pp16k 1290); first 64 output tokens and draft acceptance identical. STRATA_SH_STREAM=1 + STRATA_REFILL_PARTS=1 (docs/STRIX_HALO.md) gave no gain, pp16k slower (1048/1230 vs 1286/1304) |
 | Strata 82f46a8 (HIP, ROCm 7.14.1) | --spec 4 --mtp (q2_0 draft layer) --lookup-chain 3 --mtp-q4 all, Strix Halo fast switches, --mmap-experts --expert-cache 24576 | UD-IQ4_XS, 93.7 GB | 47.1/41.0/50.1 | pp4k 927, pp16k 1179 | D | 2026-10-06 | same GGUF and token ids as llama.cpp; prompts 2.2-2.9x faster; the default (host arena + auto cache) ran out of memory on the APU, a 6000-slot cache gave 40.5 |
 | Strata 82f46a8 (HIP, ROCm 7.14.1), serve.server | OpenAI server, max context 65536, --spec 4 --mtp --lookup-chain 3 --mtp-q4 all, Strix Halo fast switches, all experts in the GPU cache; real Open WebUI chats with code execution and tool calls | UD-IQ4_XS, 93.7 GB | 43–57 (tool-call rounds highest) | fresh 6.6k / 12.5k prompts in ~6 s / ~11 s; follow-up rounds reuse the prefix and read only the new ~300–550 tokens (1–2 s) | D | 2026-10-06 | ~3.5x faster prompt than llama.cpp in the same chats; 65 GiB; prompt still ~1.6x slower than Qwen3.6 because ~7B parameters are active per token instead of ~3B |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2 | UD-IQ4_XS, 93.7 GB | 41.3 | — | D | 2026-09-28 | occupies 94 GiB, runs only alone |
@@ -697,4 +704,4 @@ files.
 | ai395-setup (private) | candidate run, colibri and Qwen3.8 measurements |
 | strix-halo-kernel-lab (private) | lab book, the gains of the lab builds, the first GLM-5.3-Flash load attempt |
 
-Last consolidated: 2026-10-17.
+Last consolidated: 2026-10-21.
