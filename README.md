@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 50 models with a measured speed, 255 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 50 models with a measured speed, 256 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -435,6 +435,16 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp 4f31296a9 | Vulkan, llama-server, 3 German prompts x 384 tokens, MTP draft (BF16) n=3 | Q8_0, 32.6 GB | 13.5 / 15.8 / 13.8 | — | D | 2026-10-13 | DFlash 10.5, no draft 6.3; GTT peak 38.1 GiB; MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
 | llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | Q8_0, 32.6 GB | 6.38 | pp512 343, pp4096 314; at 8k depth tg 5.95 | C | 2026-10-13 | MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
 | llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | BF16, 61.4 GB | 3.47 | pp512 76, pp4096 93 | C | 2026-10-13 | server with MTP 7.7, DFlash 5.9; MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
+
+</details>
+
+<details>
+<summary><b>Nemotron-3.5-Super-VL-120B-A12B</b> — 2 measurements, 17.57 to 19.6 tok/s</summary>
+
+| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
+|---|---|---|---:|---:|---|---|---|
+| llama.cpp 9b56ccf00 | Vulkan, llama-server, 3 German prompts x 384 tokens, no thinking, LiLiCorr draft (NVFP4, 1.3 GB) via draft-dflash | UD-Q4_K_XL, 86.9 GB | 17.1 / 23.8 / 17.9 (17.2 without draft) | — | D | 2026-10-21 | draft acceptance 44 %, mean length 2.3: +14 % on average, only one prompt clearly faster. Quality on the same day: code duel 3/5 error-free (Qwen3.8-27B coder 4/5), tool calls 22/24, receipt picture 9/9; 80 GiB, runs alone |
+| llama.cpp 9b56ccf00 | Vulkan, no draft, llama-bench -fa 1 | UD-Q4_K_XL, 86.9 GB | — | pp512 379, pp2048 330 | C | 2026-10-21 | perplexity 3.06 (wiki.test, 6 chunks), CPU check 2.10 vs 2.11 on 2 chunks; 79 GiB GTT; must run alone |
 
 </details>
 
