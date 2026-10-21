@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 50 models with a measured speed, 259 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 50 models with a measured speed, 261 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -305,13 +305,15 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-27B</b> — 23 measurements, 4.28 to 33 tok/s</summary>
+<summary><b>Qwen3.8-27B</b> — 25 measurements, 4.28 to 33 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
 | llama.cpp (lab build) | Vulkan, with MTP, coder service under agent load | Q4_K_M, 16.8 GB | 30–36 | 478.9 | D | 2026-09-22 | occupies 76 GiB with the packed matmul copy; prompt: llama-bench -ub 512 |
+| Gufo 0.20.0 (0c03748, container gufo-runtime, ROCm) | OpenAI server, DFlash2 draft (Qwen3.8-27B-DFlash2-Q4_K_M, pinned 2d9571f8), context 65536, sampled (temp 0.7 / top_p 0.8, no thinking; code duel temp 0.6 + reasoning budget 8000) | UD-Q4_K_XL (Unsloth, pinned 4ca72078), 17.6 GB | 20.8/33.9/20.1 (3 German prompts, tokens / wall time); code duel 29.5-31.1 | 3.7k prompt 548, 15.9k prompt 565 (wall time, max_tokens 1) | D | 2026-10-21 | same-session comparison with the llama.cpp coder service setup (next row): generation +37 % in the code duel (30.3 vs 22.1), prompt +43-46 %, tool calls 24/24 at 6.2 s (llama.cpp 22/24 at 8.7 s). But code duel only 1/5 error-free (4 runs failed the same random test, 451/500) against 4/5 for llama.cpp Q4_K_M; different quant, so quality comparison is not engine-only |
 | llama.cpp (strix fork 10565) | Vulkan, with MTP, 400 tokens | Q4_K_M, 16.8 GB | 27.9 | 244 | D | 2026-09-16 | — |
 | Ollama | qwen3.8:27b with MTP, candidate run | Q4_K_M, 17 GB | 25.3 | — | B | 2026-09-16 | — |
+| llama.cpp (lab build hybrid2) | Vulkan, MTP 4 drafts, coder service flags (PACKED=2, CONCAT_T, BCOL), same requests as the Gufo row | Q4_K_M, 16.8 GB | 18.9/25.0/20.2 (sampled, tokens / wall time); code duel 21.9-22.4 | 3.7k prompt 375, 15.9k prompt 396 | D | 2026-10-21 | reference for the Gufo row; code duel 4/5 error-free, tool calls 22/24 at 8.7 s |
 | llama.cpp (lab build hybrid2) | Vulkan, MTP draft length 4, coder service settings, code duel (expression evaluator, thinking budget 8000, temp 0.6), 5 runs | Q4_K_M, 16.8 GB | 21.7 (20.6–22.8) | — | D | 2026-10-17 | 4 of 5 solutions pass all 547 tests (once 451/500: max() with one argument); draft acceptance 0.49 while thinking; GLM-5.3-Flash on the same task 2 of 5 |
 | llama.cpp (strix fork 10707) | Vulkan, with MTP, 400 tokens | Q4_K_M, 16.8 GB | 20.3 | 341 | D | 2026-09-16 | — |
 | Ollama 0.34.1 | with MTP, 400 tokens | Q4_K_M, 16.8 GB | 19.5 | 288 | D | 2026-09-16 | — |
