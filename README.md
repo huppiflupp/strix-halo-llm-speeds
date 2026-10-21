@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 50 models with a measured speed, 257 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 50 models with a measured speed, 259 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -45,8 +45,8 @@ the running service where there is one. Every other measurement of the same mode
 | 17 | gpt-oss-120b | 117B MoE, 4 of 128 experts active | MXFP4, 63.4 GB | llama.cpp master + PR #27952, Vulkan, llama-bench | **53.7** | 1151.9 | C |
 | 18 | qwen3-coder-next | 80B MoE, 3B active | 52 GB | Ollama | **51.1** | — | B |
 | 19 | nex-agi Nex-N2.5-mini | 35B MoE | Q4_K_M, 21.3 GB | Ollama | **50.8** | — | B |
-| 20 | Qwen3.8-Flash-Next | 125B MoE, 6B active | UD-IQ4_XS, dense trunk Q5_K (imatrix), 92.3 GB | llama.cpp (PR #28243), Vulkan, MTP draft length 2; experts and PLE table from UD-IQ4_XS, dense Q8_0 tensors requantized to Q5_K | **no MTP ~31.5** | — | D |
-| 21 | qwen3-next | 80B MoE, 3B active | 50 GB | Ollama | **45.1** | — | B |
+| 20 | qwen3-next | 80B MoE, 3B active | 50 GB | Ollama | **45.1** | — | B |
+| 21 | Qwen3.8-Flash-Next | 125B MoE, 6B active | UD-Q4_K_XL (Unsloth, pinned 38bb39ee), 111.3 GB | Gufo 0.20.0 (0c03748, container gufo-runtime, ROCm), OpenAI server, adaptive MTP (shared-Q8 sidecar, up to 7 drafts), context 65536, sampled (temp 0.7 / top_p 0.8, no thinking; code duel temp 0.6 + reasoning budget 8000) | **36.3/47.6/38.4 (3 German prompts, tokens / wall time); code duel 43-45** | 3.7k prompt 1532, 15.9k prompt 1657 (wall time, max_tokens 1) | D |
 | 22 | DeepSeek-Qwen3-8B | 8B | Q4_1, 4.9 GB | Lemonade (llama.cpp), Vulkan | **40.6** | — | A |
 | 23 | granite4.2 | 8B dense | 5.3 GB | Ollama | **40.4** | — | B |
 | 24 | qwen3-vl:8b-instruct | 8B | Q4_K_M, 6.1 GB | Ollama | **37.3** | — | A |
@@ -243,7 +243,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-Flash-Next</b> — 16 measurements, 6.3 to 50.8 tok/s</summary>
+<summary><b>Qwen3.8-Flash-Next</b> — 18 measurements, 6.3 to 50.8 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
@@ -255,8 +255,10 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | Strata 82f46a8 (HIP, ROCm 7.14.1), serve.server | OpenAI server, max context 65536, --spec 4 --mtp --lookup-chain 3 --mtp-q4 all, Strix Halo fast switches, all experts in the GPU cache; real Open WebUI chats with code execution and tool calls | UD-IQ4_XS, 93.7 GB | 43–57 (tool-call rounds highest) | fresh 6.6k / 12.5k prompts in ~6 s / ~11 s; follow-up rounds reuse the prefix and read only the new ~300–550 tokens (1–2 s) | D | 2026-10-06 | ~3.5x faster prompt than llama.cpp in the same chats; 65 GiB; prompt still ~1.6x slower than Qwen3.6 because ~7B parameters are active per token instead of ~3B |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2 | UD-IQ4_XS, 93.7 GB | 41.3 | — | D | 2026-09-28 | occupies 94 GiB, runs only alone |
 | llama.cpp (PR #28243) | Vulkan, llama-server -c 98304, MTP draft length 2, reasoning budget 2000; real Open WebUI chats with web search and tool calls | UD-IQ4_XS, dense trunk Q5_K (imatrix), 92.3 GB | 37.5–42.4 over four requests | web-search prompts of 11.1k / 17.4k tokens: 325 / 315 tok/s (34 s / 55 s before the first token) | D | 2026-10-06 | each web-search round re-reads 6–10k tokens of page text; at ~330 tok/s that is up to a minute per round, which made the chat feel unusable |
+| Gufo 0.20.0 (0c03748, container gufo-runtime, ROCm) | OpenAI server, adaptive MTP (shared-Q8 sidecar, up to 7 drafts), context 65536, sampled (temp 0.7 / top_p 0.8, no thinking; code duel temp 0.6 + reasoning budget 8000) | UD-Q4_K_XL (Unsloth, pinned 38bb39ee), 111.3 GB | 36.3/47.6/38.4 (3 German prompts, tokens / wall time); code duel 43-45 | 3.7k prompt 1532, 15.9k prompt 1657 (wall time, max_tokens 1) | D | 2026-10-21 | same-session comparison with Strata 82f46a8 on its chat config (UD-IQ4_XS): Strata 32.4/39.8/34.2, prompts 917 / 1263, code duel ~41.5. Gufo +15 % generation, +31-67 % prompt. Code duel 3/5 error-free (Strata 2/5, Qwen3.8-27B coder 4/5); tool calls 22/24 at 3.8 s (Strata 24/24 at 4.7 s); 85 GiB GTT (Strata 72) |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2, full context 262144 | UD-IQ4_XS, 93.7 GB | 40.67 | — | D | 2026-09-29 | one prompt; 78.2 GiB GTT + 27.1 GiB host RAM |
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 3 | UD-IQ4_XS, 93.7 GB | 40.6 | — | D | 2026-09-28 | — |
+| Strata 82f46a8 (HIP, ROCm 7.14.1), serve.server | chat config (--spec 4 --mtp --lookup-chain 3 --mtp-q4 all, --no-prefill-borrow), same requests as the Gufo row | UD-IQ4_XS, 93.7 GB | 32.4/39.8/34.2 (sampled, tokens / wall time); code duel ~41.5 | 3.7k prompt 917, 15.9k prompt 1263 | D | 2026-10-21 | reference for the Gufo row; code duel 2/5 error-free, tool calls 24/24 at 4.7 s, 72 GiB GTT |
 | llama.cpp (PR #28243) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048 | UD-IQ4_XS, 93.7 GB | 23.90 at depth 16384 | pp512 504, pp4096 508, pp16384 462 | C | 2026-09-29 | prompt is 3.3x slower than Qwen3.6 |
 | llama.cpp (PR #28243) | Vulkan, -fa on -c 20480 -ub 2048, three prompts x2, no MTP / MTP draft length 2 | UD-IQ4_XS, 93.7 GB | MTP 42.8 (45.7/40.4/42.3) | pp4k 420, pp16k 408 | D | 2026-10-06 | reference for the Strata comparison |
 | llama.cpp (PR #28243) | Vulkan, no MTP | UD-IQ4_XS, 93.7 GB | 26.85 | — | D | 2026-09-28 | — |
