@@ -8,7 +8,7 @@ tokens per second. {{SUMMARY}}
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
-**Period:** August – 29 September 2026.
+**Period:** August – 23 October 2026.
 
 > **Read this first.** The numbers come from different harnesses and are **not** a ranking
 > to the decimal. The *How* column says which one produced a figure; the legend is
@@ -147,6 +147,50 @@ not the same model.
 
 **NPU.** The same Gemma 4 E4B weights are about 5× slower on the NPU than on the iGPU. The
 NPU is a second compute unit that runs while the iGPU is busy, not an accelerator.
+
+## Speech models (Gufo 0.22.0)
+
+Not language models and not measured in tok/s, so **not in the list or in `models.csv`**.
+Measured on 2026-10-23 as candidates for a local pronunciation trainer, which today uses
+faster-whisper small (CPU) for recognition and Pocket TTS / Kokoro (CPU) for speech.
+Gufo 0.22.0 (7b1bf04, container `gufo-runtime`, ROCm), `gufo serve asr|tts`, all other
+services stopped.
+
+**Speech recognition: Qwen3-ASR 1.7B** (4.5 GiB GTT), against faster-whisper on the CPU (int8,
+greedy, no VAD). WER on 100 FLEURS test sentences per language; "app words" are 104
+synthetic clips of single words and short sentences (Kokoro / espeak, 26 of them pitched up
+to a child's voice); speed is audio seconds per compute second.
+
+| | Qwen3-ASR 1.7B (Gufo, iGPU) | whisper small (4 threads) | whisper large-v3-turbo (16 threads) |
+|---|---:|---:|---:|
+| FLEURS German, WER | **2.8 %** | 10.1 % | 4.6 % |
+| FLEURS English, WER | **3.9 %** | 6.7 % | 5.9 % |
+| FLEURS French, WER | **5.3 %** | 14.8 % | 6.8 % |
+| FLEURS speed (× real time) | 10.9–15.2 | 14.7–20.1 | 10.6–14.1 |
+| app words, exactly right | **64/104** | 49/104 | 58/104 |
+| of them child voice | **18/26** | 12/26 | 17/26 |
+| app words, median time per clip | **157 ms** | 335 ms | 755 ms |
+
+whisper small loops on some one-word clips (whole repeated sentences); Qwen3-ASR does not.
+The API returns text only, no word timestamps or word probabilities.
+
+**Speech synthesis: Qwen3-TTS 1.7B** (12 Hz; CustomVoice 5.7 GiB, Base with voice cloning
+6.0 GiB GTT). 24 texts (6 German tutor sentences, 9 English and 9 French words or short
+sentences), streamed PCM, second of two rounds. Intelligibility = WER of whisper
+large-v3-turbo transcribing the output; first audio = time to the first PCM chunk (CPU
+baseline: whole utterance, no streaming).
+
+| | WER de / en / fr | first audio (median) | speed (× real time) |
+|---|---|---|---|
+| baseline: Pocket TTS "eve" (de), Kokoro bf_emma / ff_siwis (en / fr), CPU | 10 / 13 / 20 % | de 888 ms, en 129 ms, fr 164 ms | 4.5–5.9 |
+| Qwen3-TTS Base, cloned from the three baseline voices | **3 / 9 / 15 %** | 225–250 ms | 1.7–2.2 |
+| Qwen3-TTS CustomVoice "serena" | 6 / 4 / 65 % | 181–185 ms | 2.1–2.4 |
+| Qwen3-TTS CustomVoice "ryan" | 3 / 4 / 250 % | 181–183 ms | 2.2–2.4 |
+
+The CustomVoice speakers cannot speak French: "dix-sept" turned into 37 s of babble with
+"ryan". Cloning works in all three languages, but once the end of the reference clip leaked
+into the output. Single-word WER is coarse (6–9 texts per language, digits vs. spelled-out
+numbers count as errors).
 
 ## The same model on other machines
 
