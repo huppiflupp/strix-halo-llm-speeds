@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 51 models with a measured speed, 268 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 51 models with a measured speed, 269 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -102,10 +102,11 @@ were not measured here and are therefore not in the list.
 Models with more than one measurement, fastest first. Click a name to open its table.
 
 <details>
-<summary><b>Qwen3.6-35B-A3B</b> — 57 measurements, 10.2 to 127.1 tok/s</summary>
+<summary><b>Qwen3.6-35B-A3B</b> — 58 measurements, 10.2 to 128 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
+| llama.cpp (lab build hybrid-port4) | Vulkan, MTP draft length 2, 48k vocabulary subset, family chat service (-np 2, vision projector) | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 123.8/125.6/133.8 (original file 103.2 same run) | — | D | 2026-10-25 | kernel lab E065: family service moved to the IQ4_XS-trunk file; KLD 0.036 vs the original, same top token 91.8 % |
 | llama.cpp (lab build hybrid-port4) | Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 127.1/127.1 (hybrid-port3 126.0/126.1 same run) | — | D | 2026-10-25 | kernel lab E062: same-input projections stacked at load time, SILU/SIGMOID x MUL fused, shared expert first; ~260 dispatches/token less; byte-identical replies |
 | llama.cpp (lab build hybrid-port3) | Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 126.1 (hybrid-port2 119.0 same run); en/de/code 123.7/123.1/131.5 | — | D | 2026-10-24 | kernel lab E061: conv + GDN recurrent state read/written in place by ids, GDN prologue (l2 norm, softplus decay, sigmoid beta) inside the GDN op, ~300 dispatches/token less; replies byte-identical to hybrid-port2, perplexity unchanged |
 | colibri (PRs #1950/#1952/#1940 stacked) | Vulkan chain, device MoE, W4A8, int4 grid 5/0.8, MTP from the checkpoint (Q36_MTP=1, 5 drafts, p_min 0.85, 48k vocab list) | int4 + converted MTP head, 22 GB | 124.1–124.3 | — | E | 2026-10-06 | llama.cpp with MTP on the same prompts 86.9; text byte-identical to plain decoding |
