@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 51 models with a measured speed, 266 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 51 models with a measured speed, 268 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -32,7 +32,7 @@ the running service where there is one. Every other measurement of the same mode
 | 4 | fableforge-ai/nexus-science | small domain model | 3.1 GB | Ollama | **145.7** | — | B |
 | 5 | llama3.2:1b | 1B dense | 1.3 GB | Ollama | **135.1** | — | B |
 | 6 | qwen3:1.7b | 2B dense | 1.4 GB | Ollama | **128.5** | — | B |
-| 7 | Qwen3.6-35B-A3B | 35B MoE, 3B active | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | llama.cpp (lab build hybrid-port3), Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | **126.1 (hybrid-port2 119.0 same run); en/de/code 123.7/123.1/131.5** | — | D |
+| 7 | Qwen3.6-35B-A3B | 35B MoE, 3B active | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | llama.cpp (lab build hybrid-port4), Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | **127.1/127.1 (hybrid-port3 126.0/126.1 same run)** | — | D |
 | 8 | Qwen3-30B-A3B-Instruct-2507 | 30B MoE, 3B active | IQ4_XS, 16.4 GB | llama.cpp (lab build), Vulkan, service | **94.3** | 2115 | D |
 | 9 | llama3.2:3b | 3.2B dense | 2 GB | Ollama | **84.7** | — | B |
 | 10 | gemma4:e2b | — | Q4_K_M, 7.2 GB | Ollama | **82** | — | A |
@@ -102,10 +102,11 @@ were not measured here and are therefore not in the list.
 Models with more than one measurement, fastest first. Click a name to open its table.
 
 <details>
-<summary><b>Qwen3.6-35B-A3B</b> — 55 measurements, 10.2 to 126.1 tok/s</summary>
+<summary><b>Qwen3.6-35B-A3B</b> — 57 measurements, 10.2 to 127.1 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
+| llama.cpp (lab build hybrid-port4) | Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 127.1/127.1 (hybrid-port3 126.0/126.1 same run) | — | D | 2026-10-25 | kernel lab E062: same-input projections stacked at load time, SILU/SIGMOID x MUL fused, shared expert first; ~260 dispatches/token less; byte-identical replies |
 | llama.cpp (lab build hybrid-port3) | Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 126.1 (hybrid-port2 119.0 same run); en/de/code 123.7/123.1/131.5 | — | D | 2026-10-24 | kernel lab E061: conv + GDN recurrent state read/written in place by ids, GDN prologue (l2 norm, softplus decay, sigmoid beta) inside the GDN op, ~300 dispatches/token less; replies byte-identical to hybrid-port2, perplexity unchanged |
 | colibri (PRs #1950/#1952/#1940 stacked) | Vulkan chain, device MoE, W4A8, int4 grid 5/0.8, MTP from the checkpoint (Q36_MTP=1, 5 drafts, p_min 0.85, 48k vocab list) | int4 + converted MTP head, 22 GB | 124.1–124.3 | — | E | 2026-10-06 | llama.cpp with MTP on the same prompts 86.9; text byte-identical to plain decoding |
 | llama.cpp (lab build hybrid-port2) | service 8090 flags (-fa 1 -ub 2048, draft-mtp n-max 2, 48k draft vocab), /completion with the Strata token ids, greedy | UD-IQ4_XS experts, dense trunk IQ4_XS, 17.3 GB | 119.7/121.1/128.1; 84.8 after a 16k prompt | pp4k 1457, pp16k 1510 | D | 2026-10-21 | same-run reference for the Strata comparison: 1.5x Strata's generation, 1.7-2.2x its prompt |
@@ -116,6 +117,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp master c85b92c69 + PR #25666 | Vulkan, with MTP, greedy, C code | UD-IQ4_XS, 17 GB | 100.5 | — | D | 2026-09-29 | PR #25666: no MMVQ on spec-decode steps; one prompt, not a mean |
 | llama.cpp (lab build) | Vulkan, with MTP, family chat service | UD-IQ4_XS, 17 GB | ≈ 97 | 1839 | D | 2026-09-22 | prompt: 2048 tokens, empty context |
 | llama.cpp (lab build hybrid-port2) | Vulkan, service flags (-fa 1 -ub 2048, draft-mtp n-max 2, 48k draft vocab), /completion with the Strata token ids, greedy | UD-Q4_K_XL (Unsloth MTP GGUF), 22.9 GB | 91.6/100.3/94.2; 77.3 after a 16k prompt | pp4k 1447, pp16k 1530 | D | 2026-10-21 | reference for the Strata rows on the same file |
+| llama.cpp (lab build hybrid-port4) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048 tg128 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 94.99/94.85/95.30/95.38 (hybrid-port3 93.0-93.5, alternated) | — | C | 2026-10-25 | kernel lab E062 |
 | llama.cpp (lab build hybrid-port3) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048 tg128 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 93.1/93.5/93.6 (hybrid-port2 81.8/82.1/82.0, alternated) | — | C | 2026-10-24 | kernel lab E061, quiet machine; +14 % without draft |
 | llama.cpp master c85b92c69 | Vulkan, with MTP, greedy, explanation | UD-IQ4_XS, 17 GB | 91.7 | — | D | 2026-09-29 | — |
 | llama.cpp master c85b92c69 | Vulkan, with MTP, greedy, C code | UD-IQ4_XS, 17 GB | 91.6 | — | D | 2026-09-29 | — |
@@ -777,4 +779,4 @@ files.
 | ai395-setup (private) | candidate run, colibri and Qwen3.8 measurements |
 | strix-halo-kernel-lab (private) | lab book, the gains of the lab builds, the first GLM-5.3-Flash load attempt |
 
-Last consolidated: 2026-10-24.
+Last consolidated: 2026-10-25.
