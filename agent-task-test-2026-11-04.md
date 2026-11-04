@@ -41,6 +41,8 @@ per net, and the generator was run again to see whether the same DSN came out.
 | Qwen3.6-35B-A3B UD-IQ3_XXS, MTP, temperature 0 | llama.cpp CUDA, RTX 5080 (32k context) | 40 s | 6 | A request of 44,374 tokens exceeded the 32,768-token window of the server. |
 | same, 64k context | llama.cpp CUDA, RTX 5080 | 2 min 39 s | 61 | No script. Explored the `pcbnew` API, then ended with a status summary (which names KiCad 7.0.x, the Flatpak is 10.0.8). |
 | same, 64k context, second run | llama.cpp CUDA, RTX 5080 | 2 min 43 s | 36 | No script. Ended with *"Ready to write the script. Want me to proceed?"*. |
+| same, 64k, prompt adds "ask no questions, do not stop before the DSN exists" | llama.cpp CUDA, RTX 5080 | 3 min 34 s | 56 | No script. The project note copied into the directory named the main repository, the model listed it (it holds another model's output) and tried to read a file there; `opencode` rejected the path and the run ended. Not a question this time, and an error in my setup, not in the model. |
+| same, third run after fixing the note and forbidding the main repository | llama.cpp CUDA, RTX 5080 | 1 min 2 s | 11 | No script. One context compaction at step 9, then a closing *"Want me to probe the MODULE/PAD constructors now … or is there something else you'd like to adjust first?"*, although the prompt said not to ask. |
 
 ## What it shows
 
@@ -52,10 +54,16 @@ per net, and the generator was run again to see whether the same DSN came out.
 * **Speed and finishing are different things.** gpt-oss was the fastest to "finish" and
   produced nothing usable; the Qwen3.6 runs on the 5080 took under three minutes each and
   stopped before writing the script.
-* **The local Qwen3.6 stops to ask.** In non-interactive mode a closing question or status
-  report ends the run. With a 64k window the context was not the cause the second time (it
-  sat at 45–47k tokens). A sentence in the prompt such as "do not ask, do not stop before the
-  DSN exists" is the first thing to try, and was **not** tried here, to keep the prompt equal.
+* **The local Qwen3.6 ends its run with a question, even when told not to.** In
+  non-interactive mode a closing question or status report ends the run. Four runs ended that
+  way or on a blocked read; the one that had the instruction "ask no questions" in its prompt
+  still ended with a question after a context compaction. `opencode`'s own text after a
+  compaction says "Continue if you have next steps, **or stop and ask for clarification** if
+  you are unsure how to proceed", which invites exactly that. The context fills to 45–57k of
+  64k, mostly with long `dir()` listings of the `pcbnew` API (the three documents the prompt
+  names are only about 19k tokens). A compaction does not always end the run: one run went on
+  for 29 more steps. A sentence in the prompt is not enough for this model; a wrapper that
+  answers "yes, continue" is tried next.
 * **Chat templates matter for agents.** A strict role-alternation check in the template
   (Mistral Small 4, Devstral Small 2) makes `opencode` fail after the first context
   compaction. Starting `llama-server` with a relaxed `--chat-template-file` is the fix; not
