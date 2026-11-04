@@ -44,6 +44,8 @@ per net, and the generator was run again to see whether the same DSN came out.
 | same, 64k, prompt adds "ask no questions, do not stop before the DSN exists" | llama.cpp CUDA, RTX 5080 | 3 min 34 s | 56 | No script. The project note copied into the directory named the main repository, the model listed it (it holds another model's output) and tried to read a file there; `opencode` rejected the path and the run ended. Not a question this time, and an error in my setup, not in the model. |
 | same, third run after fixing the note and forbidding the main repository | llama.cpp CUDA, RTX 5080 | 1 min 2 s | 11 | No script. One context compaction at step 9, then a closing *"Want me to probe the MODULE/PAD constructors now … or is there something else you'd like to adjust first?"*, although the prompt said not to ask. |
 | same, 64k, **with a wrapper** that answers *"Yes, continue. Ask no questions."* each time the model stops | llama.cpp CUDA, RTX 5080 | 7 min 55 s (three `opencode` calls: it stopped after 40 steps, then twice more) | 40 + 76 + 19 | **Produced all three files**: script, DSN, report; running the script again gives an identical DSN; nothing written outside `bench/testplatinen/`. But it is not the requested circuit: 13 placements (a 32-pad QFN with every pad on GND, 6 resistors, 2 capacitors, 4 pin headers), 3 nets, 20 × 15 mm outline; components are built from code and appear as `::1`…`::12` in the DSN, pad numbers read `@1`…; the report says two tracks of 0.04 mm while the script's own statistics print three. Usable as routing input, not as a phase shifter. |
+| **Planner + helper**: Flash-Next as main agent, Qwen3.6 on the 5080 as sub-agent `helfer`, configured in `opencode` only (rules file, nothing in the prompt) | Gufo 0.22.0 on Strix Halo + llama.cpp CUDA on the RTX 5080 | stopped by me after 4 min 8 s | 20 | The main agent never called the sub-agent (zero Task calls); everything ran on Flash-Next alone. |
+| same, but the **prompt** names the division of labour: the helper reads the three documents, answers questions about the `pcbnew` API, shortens long command output; call it at least twice | same | **13 min 38 s** | 28 main-agent requests on Flash-Next + 103 helper requests on the 5080 (4 Task calls, 2 compactions, 1 context overflow in the helper: 65,591 tokens against a 65,536 window) | **Complete and correct**: DSN with 6 placements, 4 nets (2 / 3 / 3 / 4 pins, the RC ladder), 2 layers, 20 × 12 mm; the generator's own check passes and a second run gives an identical DSN; the report says what the helper was used for. **33 % slower** than Flash-Next alone (10 min 14 s): the helper was active for about 7½ of the 13½ minutes, one request at a time, and the main agent waited for it. |
 
 ## What it shows
 
@@ -74,6 +76,14 @@ per net, and the generator was run again to see whether the same DSN came out.
 * **Temperature 0 was only set for Flash-Next and the 5080 runs.** The other runs used
   `opencode`'s default sampling for the model, so the comparison is not controlled. For Gufo,
   temperature 0 raised code generation from 38 to 53 tok/s (see `models.csv`).
+
+* **A fast helper did not save time on this task.** The main agent needed fewer requests (28
+  against 33) but the whole run took a third longer. The documents and the API probing it
+  handed over took the helper over a hundred small requests, and the main agent cannot start
+  writing before the answers arrive. It would help more for work that can run in parallel
+  (the 5080 server has one slot, so not here) or for tasks whose output is huge and
+  throwaway. Without an explicit instruction in the prompt the main agent did not use the
+  helper at all.
 
 ## Not run
 
