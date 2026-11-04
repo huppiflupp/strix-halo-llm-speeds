@@ -202,6 +202,9 @@ backend. It can.
 | Machine | Quant, file size | llama.cpp, configuration | Generation tok/s | Prompt tok/s |
 |---|---|---|---:|---:|
 | **245k**: Core Ultra 5 245K, RTX 5080 16 GB | UD-IQ3_XXS, 13.1 GB | 4fea119, CUDA, everything in VRAM, MTP | **275** | 4189 |
+| 245k (re-measured 2026-11-04) | UD-IQ3_XXS, 13.1 GB | 4fea119, CUDA, `--fit on`, MTP | 255.7 | 4073 |
+| 245k | UD-IQ3_XXS, 13.1 GB | same, MTP, `-ub 2048` | 174.1 | 4814 |
+| 245k | UD-IQ3_XXS, 13.1 GB | same, no MTP | 171.2 | 4487 |
 | Strix Halo (this list, other harness) | UD-IQ4_XS, 17 GB | lab build, Vulkan, MTP, `-ub 2048` | ≈ 97 (63 without MTP) | 1841 |
 | **x9**: Xeon E5-2697 v2, 64 GB DDR3-1333, RTX 2080 Ti 11 GB | UD-IQ3_XXS, 13.1 GB | bed0a85, CUDA, `--fit on --fit-target 384`, MTP, `-ub 2048` (the service) | **46.8** | 1105 |
 | x9 | UD-IQ3_XXS, 13.1 GB | same, `-ub 512` | 49.2 | 497 |
@@ -232,6 +235,13 @@ What the x9 runs show:
 * **Larger quants mainly cost prompt speed**: more of the model sits in RAM, and prompt
   processing drops to 234–304 tok/s, while generation stays at 40–48 tok/s.
 
+What the 245k re-measurement (2026-11-04, `other-machines/2026-11-04-245k.jsonl`) shows:
+
+* **The first figure is roughly reproduced.** 255.7 against 275 tok/s generation (-7 %) and 4073 against 4189 prompt tok/s, same build, one run each and no variance estimate, so the gap may be noise; the 7,382-token prompt is the `sampling.cpp` of the local checkout (20 tokens longer than on the x9), run with [`other-machines/x9bench-245k.py`](other-machines/x9bench-245k.py), a copy of `x9bench.py` with other paths and 14 threads.
+* **`-ub 2048` is a loss on a 16 GB card, as on the x9**: prompt speed rises (4073 → 4814) but generation drops from 256 to 174 tok/s, because the larger compute buffer pushes experts to the CPU (resident set 1.4 → 7.9 GB).
+* **MTP gave +49 %** on the 5080 in this pair of runs (171 → 256 tok/s), against +10 % on the x9 (another machine and day).
+* **A dense 24B model needs the whole card.** Devstral Small 2 24B (Q4_K_M, 13.3 GiB) generates 24.6 tok/s with a q8_0 KV cache at 32k context (layers spill to the CPU), 35 with a q4_0 KV cache, and **56 tok/s** once `--fit-target 200` keeps every layer on the GPU (15.4 of 16.3 GiB used). Single requests, so orders of magnitude only. At 48k context the KV cache no longer fits next to the weights.
+
 ## How the numbers were measured
 
 | Code | Harness | Settings | Comparable with |
@@ -258,6 +268,8 @@ Caveats that apply to the whole list:
   changing the llama.cpp build; all flag and system tuning together brought under 3 %.
 * **The list says nothing about quality.** About half the models in the smoke test scored
   6/6; the task results are in the source repositories.
+* **One coding-agent task, five models, one run each** (2026-11-04, uncontrolled sampling): a
+  picture of who finished, not a ranking; see [`agent-task-test-2026-11-04.md`](agent-task-test-2026-11-04.md).
 
 ## Adding a measurement
 
