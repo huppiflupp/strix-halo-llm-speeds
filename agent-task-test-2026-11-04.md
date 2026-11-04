@@ -43,6 +43,7 @@ per net, and the generator was run again to see whether the same DSN came out.
 | same, 64k context, second run | llama.cpp CUDA, RTX 5080 | 2 min 43 s | 36 | No script. Ended with *"Ready to write the script. Want me to proceed?"*. |
 | same, 64k, prompt adds "ask no questions, do not stop before the DSN exists" | llama.cpp CUDA, RTX 5080 | 3 min 34 s | 56 | No script. The project note copied into the directory named the main repository, the model listed it (it holds another model's output) and tried to read a file there; `opencode` rejected the path and the run ended. Not a question this time, and an error in my setup, not in the model. |
 | same, third run after fixing the note and forbidding the main repository | llama.cpp CUDA, RTX 5080 | 1 min 2 s | 11 | No script. One context compaction at step 9, then a closing *"Want me to probe the MODULE/PAD constructors now … or is there something else you'd like to adjust first?"*, although the prompt said not to ask. |
+| same, 64k, **with a wrapper** that answers *"Yes, continue. Ask no questions."* each time the model stops | llama.cpp CUDA, RTX 5080 | 7 min 55 s (three `opencode` calls: it stopped after 40 steps, then twice more) | 40 + 76 + 19 | **Produced all three files**: script, DSN, report; running the script again gives an identical DSN; nothing written outside `bench/testplatinen/`. But it is not the requested circuit: 13 placements (a 32-pad QFN with every pad on GND, 6 resistors, 2 capacitors, 4 pin headers), 3 nets, 20 × 15 mm outline; components are built from code and appear as `::1`…`::12` in the DSN, pad numbers read `@1`…; the report says two tracks of 0.04 mm while the script's own statistics print three. Usable as routing input, not as a phase shifter. |
 
 ## What it shows
 
@@ -62,8 +63,10 @@ per net, and the generator was run again to see whether the same DSN came out.
   you are unsure how to proceed", which invites exactly that. The context fills to 45–57k of
   64k, mostly with long `dir()` listings of the `pcbnew` API (the three documents the prompt
   names are only about 19k tokens). A compaction does not always end the run: one run went on
-  for 29 more steps. A sentence in the prompt is not enough for this model; a wrapper that
-  answers "yes, continue" is tried next.
+  for 29 more steps. A sentence in the prompt was not enough for this model. A wrapper that
+  simply answers "yes, continue" got the same model to write all three files in under eight
+  minutes, so the stopping is more a harness problem than a lack of ability, but the result
+  is mixed (last row): complete files, wrong circuit, a report that does not fully match.
 * **Chat templates matter for agents.** A strict role-alternation check in the template
   (Mistral Small 4, Devstral Small 2) makes `opencode` fail after the first context
   compaction. Starting `llama-server` with a relaxed `--chat-template-file` is the fix; not
