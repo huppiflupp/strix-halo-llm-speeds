@@ -46,6 +46,8 @@ per net, and the generator was run again to see whether the same DSN came out.
 | same, 64k, **with a wrapper** that answers *"Yes, continue. Ask no questions."* each time the model stops | llama.cpp CUDA, RTX 5080 | 7 min 55 s (three `opencode` calls: it stopped after 40 steps, then twice more) | 40 + 76 + 19 | **Produced all three files**: script, DSN, report; running the script again gives an identical DSN; nothing written outside `bench/testplatinen/`. But it is not the requested circuit: 13 placements (a 32-pad QFN with every pad on GND, 6 resistors, 2 capacitors, 4 pin headers), 3 nets, 20 × 15 mm outline; components are built from code and appear as `::1`…`::12` in the DSN, pad numbers read `@1`…; the report says two tracks of 0.04 mm while the script's own statistics print three. Usable as routing input, not as a phase shifter. |
 | **Planner + helper**: Flash-Next as main agent, Qwen3.6 on the 5080 as sub-agent `helfer`, configured in `opencode` only (rules file, nothing in the prompt) | Gufo 0.22.0 on Strix Halo + llama.cpp CUDA on the RTX 5080 | stopped by me after 4 min 8 s | 20 | The main agent never called the sub-agent (zero Task calls); everything ran on Flash-Next alone. |
 | same, but the **prompt** names the division of labour: the helper reads the three documents, answers questions about the `pcbnew` API, shortens long command output; call it at least twice | same | **13 min 38 s** | 28 main-agent requests on Flash-Next + 103 helper requests on the 5080 (4 Task calls, 2 compactions, 1 context overflow in the helper: 65,591 tokens against a 65,536 window) | **Complete and correct**: DSN with 6 placements, 4 nets (2 / 3 / 3 / 4 pins, the RC ladder), 2 layers, 20 × 12 mm; the generator's own check passes and a second run gives an identical DSN; the report says what the helper was used for. **33 % slower** than Flash-Next alone (10 min 14 s): the helper was active for about 7½ of the 13½ minutes, one request at a time, and the main agent waited for it. |
+| **Planner + 3 parallel helpers**: server on the 5080 restarted with 3 slots of 32k, the prompt describes the helper (very fast, less accurate, 32k window), asks for a plan first and two waves of three simultaneous Task calls | same | stopped by me after about 9½ min | 4 main-agent requests, 74 helper requests (2 compactions) | **Hung**: a helper wanted to write a probe file to `/var/tmp`; for a sub-agent `opencode` leaves that permission question open when it runs without a terminal and nobody answers (the main agent's own outside-the-project accesses are rejected automatically). The helper work itself ran in parallel (three at once), but two helpers hit their 32k window. |
+| same, with outside-the-project access denied outright (`external_directory: deny`), the path rule and `head -60` in every helper order | same | **22 min 8 s** | 43 main-agent requests, 150 helper requests, 6 Task calls (up to 3 helpers at once) | Finished, but a smaller circuit than the reference (5 placements, 4 nets with 3 / 2 / 3 / 2 pins instead of 6 and 4 with 4 / 2 / 3 / 3). The first helper wave (reading the documents, 46 s) was usable; in the second (the `pcbnew` API) all three helpers took 175, 474 and **650 s**, hit their 32k window ten times and delivered mostly nothing usable (empty answer, a question back, a dead end); the main agent waited about 11 minutes for the slowest and took every API fact from its own probes. |
 
 ## What it shows
 
@@ -84,6 +86,36 @@ per net, and the generator was run again to see whether the same DSN came out.
   (the 5080 server has one slot, so not here) or for tasks whose output is huge and
   throwaway. Without an explicit instruction in the prompt the main agent did not use the
   helper at all.
+* **Real parallelism did not save time either.** With three slots the helpers did run side by
+  side (waves of 3), but the main agent has to wait for the slowest of the wave: one helper took
+  650 s while the other two were done after 175 s and 474 s. The 3-slot server also halves the
+  speed of a single request (122 against 255 tok/s) and delivers only 163 tok/s for three at
+  once, so splitting a GPU between helpers is a loss in raw throughput; it only pays where the
+  helper mostly waits on tools. What the agent needs is a helper that is *reliable*, not only
+  fast: a helper that answers with nothing, a question or a dead end costs a whole wave.
+* **Sub-agent permissions are a trap when running without a terminal.** A sub-agent's permission
+  question is not rejected automatically and hangs the whole run; deny outside access in the
+  configuration instead of relying on the prompt.
+
+## Follow-up: ten more test boards with Flash-Next alone
+
+Same setup (`opencode`, Flash-Next on Gufo 0.22, temperature 0, outside access denied, a small wrapper
+that answers "yes, continue" if it stops; it never had to). The task: build a shared helper module, a
+generator per board and a checker, then ten two-layer boards of rising difficulty (a 5th-order LC
+low-pass, an NE555 blinker, a Sallen-Key filter, an LDO supply, an RS-485 interface with a differential
+pair, an I²C LED expander, an H-bridge, two cascaded 74HC595 with 16 LEDs, a TQFP-32 breakout and a
+BGA-48 fanout), each unrouted, exported as Specctra DSN, checked, committed.
+
+| Step | Time | Steps | Outcome |
+|---|---:|---:|---|
+| ten boards, infrastructure, checker, overview | 53 min | 117 (2 compactions) | all ten pass its own checker; 6 to 37 parts, 4 to 38 nets, 14 to 105 pads |
+| KiCad's own rule check on the *unrouted* boards (mine) | – | – | only 2 of 10 clean: 8 boards had overlapping courtyards (1 to 3 each), `mcu_breakout` also 4 × copper too close to the edge; its own checker compares pad hulls only and missed all of it |
+| follow-up: fix the placement, add the KiCad check to the build, rebuild all | 33 min | – | all 11 boards (with the first one) pass KiCad's check; I rebuilt every board from the old and the new commit and compared the DSNs: **nets and parts are identical on all ten**, only positions and rotations changed (0 to 11 parts per board) |
+
+Two notes on the method: my first comparison of the old and new netlists reported "changed" for all ten,
+because the old DSN files had never been committed and the comparison silently read an empty string;
+rebuilding the old boards from the old commit fixed that. And the second round only happened because a
+second, independent check (KiCad's rule engine) was applied; the model's own check was not enough.
 
 ## Not run
 
