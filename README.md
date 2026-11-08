@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 51 models with a measured speed, 285 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 51 models with a measured speed, 286 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -210,7 +210,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-Flash-Next</b> — 33 measurements, 6.3 to 60.5 tok/s</summary>
+<summary><b>Qwen3.8-Flash-Next</b> — 34 measurements, 6.3 to 60.5 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
@@ -228,6 +228,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (PR #28243) | Vulkan, -fa on -c 8192, 3 prompts x 384 tokens, temperature 0, no MTP / MTP draft length 2 | UD-Q4_K_XL, trunk + head Q5_K where K % 256 == 0; hc_*_up and ffn_down_shexp stay Q8_0, 110.9 GB | no MTP 30.1 (+19 %); MTP +14 % | — | D | 2026-11-08 | KLD 0.049, same top 94.5 %, PPL x1.008 |
 | Strata 82f46a8 (HIP, ROCm 7.14.1), serve.server | OpenAI server, max context 65536, --spec 4 --mtp --lookup-chain 3 --mtp-q4 all, Strix Halo fast switches, all experts in the GPU cache; real Open WebUI chats with code execution and tool calls | UD-IQ4_XS, 93.7 GB | 43–57 (tool-call rounds highest) | fresh 6.6k / 12.5k prompts in ~6 s / ~11 s; follow-up rounds reuse the prefix and read only the new ~300–550 tokens (1–2 s) | D | 2026-10-06 | ~3.5x faster prompt than llama.cpp in the same chats; 65 GiB; prompt still ~1.6x slower than Qwen3.6 because ~7B parameters are active per token instead of ~3B |
 | llama.cpp (PR #28243) | Vulkan, -fa on -c 8192, 3 prompts x 384 tokens, temperature 0, no MTP / MTP draft length 2 | UD-Q4_K_XL, qkv/q/k/v + HC + head Q5_K, rest Q8_0, 111 GB | no MTP 28.1 (+11 %); MTP +10 % | — | D | 2026-11-08 | KLD 0.037, same top 94.9 %, PPL x0.997 |
+| Gufo main 17d6fa25, greedy MTP chain gate 0.75 instead of 0.85 | coder settings without disk cache, temperature 0, thinking on: 3 code + 2 prose prompts, 4 turns on a ~30k-token context, alternating fresh servers | UD-Q4_K_XL (pinned d9620119), 111.3 GB | agent 42.4 (gate 0.85: 41.4-41.8), code 44.8-45.1 (44.5-44.6), prose 47.1 (47.2-47.3); gate 0.70: 42.3/45.0/46.5; 0.80: 41.9/45.3/47.1; 0.90: 41.4/44.4/46.7; 0.95: 41.4/44.2/46.4 | — | D | 2026-11-08 | text hash identical at every gate. Flat optimum: +1.7-2.4 % on agent load, -0.4 % on prose; not adopted, not worth carrying a local build |
 | Gufo main 17d6fa25, draft vocabulary prefix 65536 instead of 98304 | same as the row above | UD-Q4_K_XL (pinned d9620119), 111.3 GB | agent 41.8, code 44.6, prose 47.5; acceptance 0.655-0.669 | — | D | 2026-11-08 | text hash identical, no gain; a smaller draft head is not a lever. Same day: 16-row WMMA tile for 2-8 verification rows is bit-identical but 2-30 % slower than production, which already reads the big dense matrices at ~210 GB/s |
 | Gufo main 17d6fa25 (own build, ROCm 10.1) | coder settings without disk cache, temperature 0, thinking on: 3 code + 2 prose prompts, 4 turns on a ~30k-token context, alternating fresh servers | UD-Q4_K_XL (pinned d9620119), 111.3 GB | agent 41.7, code 44.6, prose 47.3; acceptance 0.655-0.672 | — | D | 2026-11-08 | load close to the real coder logs (0.31: 48-50 tok/s, acceptance 0.66-0.69) |
 | Gufo 0.31.0 (be7bd3b, container gufo-runtime, ROCm) | same flags and requests as the 0.22.0 row of 2026-11-08 | UD-Q4_K_XL (Unsloth, pinned d9620119), 111.3 GB | 33.8/49.5/41.1 (3 German prompts, sampled, tokens / wall time); code at temperature 0: 67.0, 1024 tokens | 3.7k prompt 1674, 15.9k prompt 1750; 35.9k prompt 17.7 s, same prompt again from RAM cache 0.29 s | D | 2026-11-08 | single run. Against 0.22.0: sampled the same, code at temperature 0 +19 %, prompt +5-10 %; the greedy text differs (similarity 0.79), so that figure is not on identical output. Greedy MTP: 806 of 1022 drafts accepted (79 % vs 71 %). 89 GiB GTT, 60 s load. Re-sending the 36k prompt with MTP did not reproduce #1081 (Windows) here. No duel, tool-call or long-run test |
