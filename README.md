@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 51 models with a measured speed, 286 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 51 models with a measured speed, 288 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -200,20 +200,11 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Gemma-4-26B-A4B-it</b> — 2 measurements, 14.51 to 68.6 tok/s</summary>
+<summary><b>Qwen3.8-Flash-Next</b> — 36 measurements, 6.3 to 74.6 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
-| llama.cpp 9b56ccf00 | Vulkan, llama-bench -fa 1 | QAT Q4_0 (google/gemma-4-26B-A4B-it-qat-q4_0-gguf), 14.4 GB | 65.8 through the server (3 German prompts, no thinking) | pp512 1925, pp2048 1785; with -ub 2048 pp2048 2100 | C | 2026-10-21 | prompted by a Reddit test (90/100 at 52-54 t/s in LM Studio). Tool calls 23/24 at 3.8 s per case (best so far), receipt picture 9/9, but code duel 0/5 error-free (fixed tests 14/46/45/46/43 of 47) vs 4/5 for the Qwen3.8-27B coder; MTP draft (BF16 head, n=3) slower: 53/67/58 tok/s, acceptance 36 %. Wikitext perplexity ~900 on GPU and CPU alike (the QAT instruct model on raw text), so not a compute error |
-| llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | BF16, 50.5 GB | 14.51 | pp512 514, pp4096 748; at 8k depth tg 13.8 | C | 2026-10-13 | MTP (12.3) and DFlash (9.3) drafts are slower than no draft (14.3, server); MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
-
-</details>
-
-<details>
-<summary><b>Qwen3.8-Flash-Next</b> — 34 measurements, 6.3 to 60.5 tok/s</summary>
-
-| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
-|---|---|---|---:|---:|---|---|---|
+| Gufo 0.34.0 (2845939, container gufo-runtime, ROCm) | coder service flags (MTP shared-Q8 sidecar, 1 session, context 262144, disk cache), streaming, rate after the first token; temperature 0, thinking off, coding prompt (500 tokens, script that sums CSV columns); 3 runs | UD-Q4_K_XL (Unsloth, pinned 38bb39ee), 111.3 GB | 74.6 (69.2-75.2) | — | D | 2026-11-13 | Release comparison on the same server config: Gufo 0.33.0 gives 74.6 (70.5-74.6), so 0.34.0 changes nothing for this model. This is a separate harness from the 2026-11-04 rows (different prompt wording, so not comparable with their 53.4). Prefill 3.7k/15.9k estimated tokens took 3.8-3.9 s / 14.9-15.0 s on both releases. |
 | Gufo main 17d6fa25 + experimental Q5_K dense route over the family K-quant kernels | same as the baseline row | UD-Q4_K_XL, trunk + head Q5_K where K % 256 == 0; hc_*_up and ffn_down_shexp stay Q8_0, 110.9 GB | code 71.7/77.5/66.7, prose 41.9/44.9; gufo bench tg128 AR 30.73 (+6 %), MTP 63.38, d4096 42.18 | gufo bench pp2048 176 (10x slower, no wide Q5_K route yet) | D | 2026-11-08 | KLD 0.049 vs UD-Q4_K_XL, same top 94.5 %, PPL x1.008 (measured on llama.cpp). Only +1.7 % with MTP on real prompts: Gufo loses its fused Q8 routes, so the +15 % seen on llama.cpp does not carry over. Not adopted |
 | Gufo main 17d6fa25 (own build, ROCm 10.1) | coder settings without disk cache: OpenAI server, MTP up to 7 drafts, context 262144, 5 prompts x 512 tokens, temperature 0, fresh server per run, two alternating rounds | UD-Q4_K_XL (pinned d9620119), 111.3 GB | code 64.8/77.5/70.6, prose 41.4/43.2; gufo bench tg128 AR 29.00, MTP 59.92, d4096 49.27 | gufo bench pp2048 1831, d4096 1793 | D | 2026-11-08 | baseline for the Q5_K trunk row; draft acceptance 0.731 |
 | Gufo 0.22.0 (7b1bf04, container gufo-runtime, ROCm) | OpenAI server, MTP (shared-Q8 sidecar), 1 session, context 131072, streaming, rate after the first token; temperature 0, thinking off, coding prompt (500-token cap, script that sums CSV columns) | UD-Q4_K_XL (Unsloth, pinned 38bb39ee), 111.3 GB | 53.4 (53.4-53.6) | — | D | 2026-11-04 | Same prompt with temperature 0.2 and thinking on: 38.1 (34.9-38.1). Gufo 0.20.0 gives 53.4, and 1 session / 131k against 2 sessions / 32k makes no difference (53.4-53.6 across all four combinations): the release and the session count do not matter here, temperature does (about +40 % on code; Gufo's README says greedy requests can use the reduced MTP head). A prompt that makes the model repeat one sentence 40 times gives 113.8-115.1 at temperature 0 (53.7-61.9 at 0.2 with thinking on): that reproduces the 105-117 tok/s Gufo advertises, but it is output that copies earlier text and not a normal answer, so it is deliberately not a row of its own. |
@@ -240,6 +231,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 3 | UD-IQ4_XS, 93.7 GB | 40.6 | — | D | 2026-09-28 | — |
 | llama.cpp (PR #28243) | Vulkan, -fa on -c 8192, 3 prompts x 384 tokens, temperature 0, no MTP / MTP draft length 2 | UD-Q4_K_XL (pinned d9620119), 111.3 GB | no MTP 25.4; MTP 35.4/44.9/38.9 | — | D | 2026-11-08 | reference for the trunk variants of 2026-11-08 |
 | Gufo 0.22.0 (7b1bf04, container gufo-runtime, ROCm) | same file, flags and requests as the Gufo 0.20.0 row | UD-Q4_K_XL (Unsloth, pinned 38bb39ee), 111.3 GB | 36.5/44.7/37.7 (3 German prompts, tokens / wall time); code duel 43.1-44.1 | 3.7k prompt 1526, 15.9k prompt 1669 (wall time, max_tokens 1) | D | 2026-10-23 | re-measurement on the new release: same as 0.20.0 within noise (40.8, prompts 1532 / 1657). Code duel 3/5 error-free (0.20: 3/5), tool calls 21/24 at 3.7 s (0.20: 22/24 at 3.8 s), 85 GiB GTT. Gufo's own 117 tok/s figure is for output that repeats the prompt (copying code); for prose Gufo states ~40 |
+| Gufo 0.34.0 (2845939, container gufo-runtime, ROCm) | same server and flags; prose prompt (about 300 words on how an autorouter works, 500-token cap, 427 generated); temperature 0, thinking off; 3 runs | UD-Q4_K_XL (Unsloth, pinned 38bb39ee), 111.3 GB | 39.5 (39.3-39.6) | — | D | 2026-11-13 | Gufo 0.33.0: 39.3 (39.2-39.8), identical within noise. |
 | Strata 82f46a8 (HIP, ROCm 7.14.1), serve.server | chat config (--spec 4 --mtp --lookup-chain 3 --mtp-q4 all, --no-prefill-borrow), same requests as the Gufo row | UD-IQ4_XS, 93.7 GB | 32.4/39.8/34.2 (sampled, tokens / wall time); code duel ~41.5 | 3.7k prompt 917, 15.9k prompt 1263 | D | 2026-10-21 | reference for the Gufo row; code duel 2/5 error-free, tool calls 24/24 at 4.7 s, 72 GiB GTT |
 | Gufo 0.22.0 (7b1bf04, container gufo-runtime, ROCm) | same server and flags; prose prompt (about 300 words on how an autorouter works, 450 tokens); temperature 0, thinking off | UD-Q4_K_XL (Unsloth, pinned 38bb39ee), 111.3 GB | 32.4 (32.0-32.4) | — | D | 2026-11-04 | Temperature 0.2 with thinking on: 35.0-36.6, so prose gains nothing from temperature 0 (MTP finds fewer draftable tokens in free text). Gufo's own mixed-text table says 36-41 at 0-131k context. |
 | llama.cpp (PR #28243) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048 | UD-IQ4_XS, 93.7 GB | 23.90 at depth 16384 | pp512 504, pp4096 508, pp16384 462 | C | 2026-09-29 | prompt is 3.3x slower than Qwen3.6 |
@@ -248,6 +240,16 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (strix fork 10707) | Vulkan, no MTP | UD-IQ4_XS, 93.7 GB | 26.5 | — | D | 2026-09-16 | — |
 | colibri (dev) on the **CPU** | CPU, experts streamed from SSD, cache 256 per layer | FP8, 185.6 GB | 6.9–7.5 | — | E | 2026-09-28 | warm page cache |
 | colibri (dev) on the **CPU** | CPU, experts streamed from SSD, cache 128 per layer | FP8, 185.6 GB | 5.8–6.8 | — | E | 2026-09-28 | warm page cache |
+
+</details>
+
+<details>
+<summary><b>Gemma-4-26B-A4B-it</b> — 2 measurements, 14.51 to 68.6 tok/s</summary>
+
+| Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
+|---|---|---|---:|---:|---|---|---|
+| llama.cpp 9b56ccf00 | Vulkan, llama-bench -fa 1 | QAT Q4_0 (google/gemma-4-26B-A4B-it-qat-q4_0-gguf), 14.4 GB | 65.8 through the server (3 German prompts, no thinking) | pp512 1925, pp2048 1785; with -ub 2048 pp2048 2100 | C | 2026-10-21 | prompted by a Reddit test (90/100 at 52-54 t/s in LM Studio). Tool calls 23/24 at 3.8 s per case (best so far), receipt picture 9/9, but code duel 0/5 error-free (fixed tests 14/46/45/46/43 of 47) vs 4/5 for the Qwen3.8-27B coder; MTP draft (BF16 head, n=3) slower: 53/67/58 tok/s, acceptance 36 %. Wikitext perplexity ~900 on GPU and CPU alike (the QAT instruct model on raw text), so not a compute error |
+| llama.cpp 4f31296a9 | Vulkan, llama-bench -fa 1 -ub 2048 | BF16, 50.5 GB | 14.51 | pp512 514, pp4096 748; at 8k depth tg 13.8 | C | 2026-10-13 | MTP (12.3) and DFlash (9.3) drafts are slower than no draft (14.3, server); MU candidate test 2026-10-13 (~/bench/mu-kandidaten) |
 
 </details>
 
@@ -809,4 +811,4 @@ files.
 | ai395-setup (private) | candidate run, colibri and Qwen3.8 measurements |
 | strix-halo-kernel-lab (private) | lab book, the gains of the lab builds, the first GLM-5.3-Flash load attempt |
 
-Last consolidated: 2026-11-08.
+Last consolidated: 2026-11-13.
