@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 51 models with a measured speed, 288 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 51 models with a measured speed, 293 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -102,16 +102,19 @@ were not measured here and are therefore not in the list.
 Models with more than one measurement, fastest first. Click a name to open its table.
 
 <details>
-<summary><b>Qwen3.6-35B-A3B</b> — 58 measurements, 10.2 to 128 tok/s</summary>
+<summary><b>Qwen3.6-35B-A3B</b> — 63 measurements, 10.2 to 139.6 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
+| llama.cpp (lab build hybrid-port4), --spec-type draft-mtp, 2 drafts, 48k vocabulary list | Vulkan, greedy (temperature 0), 32k context, -np 1; 2 prompts: rewrite a 170-line Python file verbatim (1500 tokens) and a 500-word essay; two runs each, mean of both | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | code 139.6, prose 116.4; acceptance 0.80 (code), 0.53 (prose) | — | D | 2026-11-16 | service setting of ports 8090/8093 |
+| llama.cpp (lab build hybrid-port4), --spec-type draft-mtp + ngram-mod | Vulkan, greedy (temperature 0), 32k context, -np 1; 2 prompts: rewrite a 170-line Python file verbatim (1500 tokens) and a 500-word essay; two runs each, mean of both | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | code 137.1 / 128.4, prose 116.2 / 103.9; acceptance 0.86 / 0.80 (code) | — | D | 2026-11-16 | no gain on top of MTP: code -5 %, prose -0 to -11 %; second run differed in text |
 | llama.cpp (lab build hybrid-port4) | Vulkan, MTP draft length 2, 48k vocabulary subset, family chat service (-np 2, vision projector) | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 123.8/125.6/133.8 (original file 103.2 same run) | — | D | 2026-10-25 | kernel lab E065: family service moved to the IQ4_XS-trunk file; KLD 0.036 vs the original, same top token 91.8 % |
 | llama.cpp (lab build hybrid-port4) | Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 127.1/127.1 (hybrid-port3 126.0/126.1 same run) | — | D | 2026-10-25 | kernel lab E062: same-input projections stacked at load time, SILU/SIGMOID x MUL fused, shared expert first; ~260 dispatches/token less; byte-identical replies |
 | llama.cpp (lab build hybrid-port3) | Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 126.1 (hybrid-port2 119.0 same run); en/de/code 123.7/123.1/131.5 | — | D | 2026-10-24 | kernel lab E061: conv + GDN recurrent state read/written in place by ids, GDN prologue (l2 norm, softplus decay, sigmoid beta) inside the GDN op, ~300 dispatches/token less; replies byte-identical to hybrid-port2, perplexity unchanged |
 | colibri (PRs #1950/#1952/#1940 stacked) | Vulkan chain, device MoE, W4A8, int4 grid 5/0.8, MTP from the checkpoint (Q36_MTP=1, 5 drafts, p_min 0.85, 48k vocab list) | int4 + converted MTP head, 22 GB | 124.1–124.3 | — | E | 2026-10-06 | llama.cpp with MTP on the same prompts 86.9; text byte-identical to plain decoding |
 | llama.cpp (lab build hybrid-port2) | service 8090 flags (-fa 1 -ub 2048, draft-mtp n-max 2, 48k draft vocab), /completion with the Strata token ids, greedy | UD-IQ4_XS experts, dense trunk IQ4_XS, 17.3 GB | 119.7/121.1/128.1; 84.8 after a 16k prompt | pp4k 1457, pp16k 1510 | D | 2026-10-21 | same-run reference for the Strata comparison: 1.5x Strata's generation, 1.7-2.2x its prompt |
 | llama.cpp (lab build hybrid-port2) | Vulkan, MTP draft length 2, draft logits over a 48k-id vocabulary subset, service llama-qwen36 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 122.3 (hybrid-voc 116.6, hybrid-port 114.3) | 1889, llama-bench pp2048 (hybrid 1684); at depth 16384 1348 (hybrid 1181) | D | 2026-10-16 | kernel lab E051-E053: vocab subset + halo-tuning FA patch 0003, IQ3_S int8 MMQ 0007, GDN_CACHE fusion (glm/0009) and RMS_NORM_SCALE fusion (glm/0010) ported; perplexity 5.7849 (5.7829 without the int8 prefill); replies byte-identical to hybrid-port |
+| llama.cpp (lab build hybrid-port4), --spec-type draft-mtp + ngram-simple | Vulkan, greedy (temperature 0), 32k context, -np 1; 2 prompts: rewrite a 170-line Python file verbatim (1500 tokens) and a 500-word essay; two runs each, mean of both | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | code 119.0 / 117.4, prose 116.6 | — | D | 2026-11-16 | code -15 % against MTP alone; prose unchanged |
 | llama.cpp (lab build hybrid) | Vulkan, MTP draft length 3 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 103.8 | — | D | 2026-10-06 | original file 89.5 tok/s |
 | llama.cpp (lab build hybrid-port3) | Vulkan, MTP draft length 2, 48k vocabulary subset, family chat service (-np 2, vision projector) | UD-IQ4_XS, 17 GB | 102.6 (hybrid-port2 98.7 same run) | — | D | 2026-10-24 | original file without the IQ4_XS trunk; image request and two parallel requests checked; kernel lab E061 |
 | llama.cpp (lab build hybrid-port2) | Vulkan, MTP draft length 2, 48k vocabulary subset, family chat service (-np 2, vision projector) | UD-IQ4_XS, 17 GB | 101.6 (hybrid 88.5, hybrid-voc 95.5, hybrid-port 94.9) | — | D | 2026-10-16 | original file without the IQ4_XS trunk; kernel lab E051-E053 |
@@ -124,6 +127,8 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp master c85b92c69 | Vulkan, with MTP, greedy, C code | UD-IQ4_XS, 17 GB | 91.6 | — | D | 2026-09-29 | — |
 | llama.cpp master c85b92c69 + PR #25666 | Vulkan, with MTP, greedy, explanation | UD-IQ4_XS, 17 GB | 91.5 | — | D | 2026-09-29 | — |
 | llama.cpp (lab build hybrid) | Vulkan, MTP draft length 3, draft logits over a 48k-id vocabulary subset (kernel lab patch 0015) | UD-IQ4_XS, 18.2 GB | 90.4 | — | D | 2026-10-06 | same session without the subset 82.0 (CPU busy with a quantization next to it; to be repeated); 4/5/6 drafts 85.4/79.2/73.3 |
+| llama.cpp (lab build hybrid-port4), --spec-type none | Vulkan, greedy (temperature 0), 32k context, -np 1; 2 prompts: rewrite a 170-line Python file verbatim (1500 tokens) and a 500-word essay; two runs each, mean of both | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | code 90.1, prose 93.6 | — | D | 2026-11-16 | baseline for the same setup |
+| llama.cpp (lab build hybrid-port4), --spec-type ngram-mod only (no MTP) | Vulkan, greedy (temperature 0), 32k context, -np 1; 2 prompts: rewrite a 170-line Python file verbatim (1500 tokens) and a 500-word essay; two runs each, mean of both | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | code 98.2 / 81.8, prose 93.6 (second prose run hung, aborted) | — | D | 2026-11-16 | about the same as no speculation, unstable |
 | llama.cpp (strix fork) | Vulkan, with MTP | UD-IQ4_XS, 17 GB | 89.8 | 1610 | D | 2026-09-18 | prompt figure from 2026-09-21, 2048 tokens |
 | llama.cpp (lab build hybrid-port2) | Vulkan, no MTP, llama-bench -fa 1 -ub 2048, pp2048 / tg128 | UD-IQ4_XS, dense trunk IQ4_XS (imatrix), 17.3 GB | 82.76; 70.45 at depth 16384 | 1889; 1348 at depth 16384 | C | 2026-10-16 | tg128 -1 % vs hybrid (83.8): graph_optimize keeps RMS_NORM and SCALE together; with MTP the same order gains |
 | colibri (PR #1952 stacked) | Vulkan chain, device MoE, W4A8, int4 grid, no MTP | int4, 22 GB | 81.0–83.8 | TTFT 4k 3.5 s, 16k 19.0 s (dev: 8.96 / 84.4 s) | E | 2026-10-06 | dev without the PRs: 44.0 tok/s (int4), 35.8 (int8) |
@@ -811,4 +816,4 @@ files.
 | ai395-setup (private) | candidate run, colibri and Qwen3.8 measurements |
 | strix-halo-kernel-lab (private) | lab book, the gains of the lab builds, the first GLM-5.3-Flash load attempt |
 
-Last consolidated: 2026-11-13.
+Last consolidated: 2026-11-16.
