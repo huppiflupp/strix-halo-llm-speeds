@@ -6,7 +6,7 @@
 header, search, filter by device. GitHub cannot sort tables in a README.
 
 One list of all language models tried on one machine, with their generation speed in
-tokens per second. 51 models with a measured speed, 293 single measurements, and 5 models that were tried without producing a number.
+tokens per second. 51 models with a measured speed, 295 single measurements, and 5 models that were tried without producing a number.
 
 **Machine:** AMD Ryzen AI MAX+ 395, Radeon 8060S iGPU (gfx1151, RDNA 3.5) + XDNA2 NPU,
 128 GB LPDDR5X-8000 unified memory, Nobara Linux 44, kernel 7.1–7.2.
@@ -205,7 +205,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-Flash-Next</b> — 36 measurements, 6.3 to 74.6 tok/s</summary>
+<summary><b>Qwen3.8-Flash-Next</b> — 37 measurements, 6.3 to 74.6 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
@@ -218,6 +218,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (PR #28243) | Vulkan, MTP draft length 2; experts and PLE table from UD-IQ4_XS, dense Q8_0 tensors requantized to Q5_K | UD-IQ4_XS, dense trunk Q5_K (imatrix), 92.3 GB | no MTP ~31.5 | — | D | 2026-10-06 | KLD 0.070 vs the original file (same top token 93.2 %, PPL x1.016, wikitext 8x2048); original 26.9 / 42.8 tok/s |
 | llama.cpp (PR #28243) | Vulkan, -fa on -c 8192, 3 prompts x 384 tokens, temperature 0, no MTP / MTP draft length 2 | UD-Q4_K_XL, qkv/q/k/v + HC + head Q4_K, rest Q5_K, 110.4 GB | no MTP 31.3 (+23 %); MTP +21 % | — | D | 2026-11-08 | KLD 0.113, same top 90.9 %, PPL x1.055; fastest, clearly lossier |
 | Strata v0.2.2 (011c9e60, HIP, ROCm 7.14.1) | CLI, same token ids and switches as the 2026-10-06 rows, --no-prefill-borrow, --spec 4 --mtp --lookup-chain 3 --mtp-q4 all, all experts in the GPU cache; interleaved old/new/new/old | UD-IQ4_XS, dense trunk Q6_K (imatrix), 93 GB | 48.9/42.4/50.4 (en/de/code, medians of 4) | pp4k 956, pp16k 1263 | D | 2026-10-21 | no change vs 82f46a8 in the same interleaved run (49.9/41.8/51.7, pp4k 904, pp16k 1290); first 64 output tokens and draft acceptance identical. STRATA_SH_STREAM=1 + STRATA_REFILL_PARTS=1 (docs/STRIX_HALO.md) gave no gain, pp16k slower (1048/1230 vs 1286/1304) |
+| Gufo 0.34.0 (container), MTP | Code duel (expression evaluator, 47 fixed + 500 random tests), temperature 0, thinking budget 8000 + 8000 answer, 3 runs, other services stopped; 65k context, no disk cache | UD-Q4_K_XL (pinned d9620119), 111.3 GB | ~10 980 tokens in 232 s; 3 runs bit-identical (46/47 fixed, 376/500 random, 0 of 3 flawless); MTP acceptance 72 %, prompt lookup 46 % | — | D | 2026-11-16 | deterministic at temperature 0, so the 3 runs are one data point; peak 85 GB GTT |
 | Strata 82f46a8 (HIP, ROCm 7.14.1) | --spec 4 --mtp (q2_0 draft layer) --lookup-chain 3 --mtp-q4 all, Strix Halo fast switches, --mmap-experts --expert-cache 24576 | UD-IQ4_XS, 93.7 GB | 47.1/41.0/50.1 | pp4k 927, pp16k 1179 | D | 2026-10-06 | same GGUF and token ids as llama.cpp; prompts 2.2-2.9x faster; the default (host arena + auto cache) ran out of memory on the APU, a 6000-slot cache gave 40.5 |
 | llama.cpp (PR #28243) | Vulkan, -fa on -c 8192, 3 prompts x 384 tokens, temperature 0, no MTP / MTP draft length 2 | UD-Q4_K_XL, whole dense trunk + head Q5_K (imatrix), 110.8 GB | no MTP 30.3 (+19 %); MTP +16 % | — | D | 2026-11-08 | KLD 0.055 vs UD-Q4_K_XL, same top 94.3 %, PPL x1.003 (wikitext 8x2048). Head requantized from Q6_K. Best trade of the four; quality only by KLD/PPL, no code test |
 | llama.cpp (PR #28243) | Vulkan, -fa on -c 8192, 3 prompts x 384 tokens, temperature 0, no MTP / MTP draft length 2 | UD-Q4_K_XL, qkv/q/k/v + HC + head Q4_K, rest Q8_0, 110.9 GB | no MTP 29.0 (+14 %); MTP +15 % | — | D | 2026-11-08 | KLD 0.088, same top 92.1 %, PPL x1.031; worse than Q5_K everywhere on both speed and quality |
@@ -336,7 +337,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 </details>
 
 <details>
-<summary><b>Qwen3.8-27B</b> — 26 measurements, 4.28 to 33 tok/s</summary>
+<summary><b>Qwen3.8-27B</b> — 27 measurements, 4.28 to 33 tok/s</summary>
 
 | Engine | Configuration | Quant, file size | Generation tok/s | Prompt tok/s | How | Date | Note |
 |---|---|---|---:|---:|---|---|---|
@@ -347,6 +348,7 @@ Models with more than one measurement, fastest first. Click a name to open its t
 | llama.cpp (lab build hybrid2) | Vulkan, MTP 4 drafts, coder service flags (PACKED=2, CONCAT_T, BCOL), same requests as the Gufo row | Q4_K_M, 16.8 GB | 18.9/25.0/20.2 (sampled, tokens / wall time); code duel 21.9-22.4 | 3.7k prompt 375, 15.9k prompt 396 | D | 2026-10-21 | reference for the Gufo row; code duel 4/5 error-free, tool calls 22/24 at 8.7 s; agent test 2026-10-22: first turn (34k) 101 s, later turns 5.4-7.2 s to first token, ~78 GB |
 | Gufo 0.20.0 (0c03748, container gufo-runtime, ROCm) | coder service (port 8094, 131k context, DFlash2) inside a real coding-agent session (opencode, thinking on), long answers of 2,000-2,800 tokens at 40-50k tokens of context | UD-Q4_K_XL (Unsloth, pinned 4ca72078), 17.6 GB | 22.0 (21.7-22.3) | — | D | 2026-11-04 | Three consecutive requests from the service log (generated tokens divided by request time). Below the 30.3 of the code duel because decoding slows with context: Gufo's own mixed-text table gives 27.0 tok/s at an empty and 21.8 at 32k context. The advertised 71.55 tok/s is the short-prompt, repetitive peak. Replaced as coder service on 2026-11-04 by Flash-Next. |
 | llama.cpp (lab build hybrid2) | Vulkan, MTP draft length 4, coder service settings, code duel (expression evaluator, thinking budget 8000, temp 0.6), 5 runs | Q4_K_M, 16.8 GB | 21.7 (20.6–22.8) | — | D | 2026-10-17 | 4 of 5 solutions pass all 547 tests (once 451/500: max() with one argument); draft acceptance 0.49 while thinking; GLM-5.3-Flash on the same task 2 of 5 |
+| llama.cpp (lab build hybrid2), MTP head Q8_0, 4 drafts | Code duel (expression evaluator, 47 fixed + 500 random tests), temperature 0, thinking budget 8000 + 8000 answer, 3 runs, other services stopped; 32k context | Q4_K_M, 18.1 GB | 19.6-21.6 tok/s, ~10 100-10 500 tokens in 469-530 s; runs differ: 47/47+500/500 (flawless), 42/47+295/500, 46/47+500/500 | — | D | 2026-11-16 | 1 of 3 flawless; peak ~71 GB GTT during the run although only 24 GB at load |
 | llama.cpp (strix fork 10707) | Vulkan, with MTP, 400 tokens | Q4_K_M, 16.8 GB | 20.3 | 341 | D | 2026-09-16 | — |
 | Ollama 0.34.1 | with MTP, 400 tokens | Q4_K_M, 16.8 GB | 19.5 | 288 | D | 2026-09-16 | — |
 | Ollama | qwen3.8:latest, smoke test | Q4_K_M, 17.7 GB | 18.2 | — | A | 2026-09-15 | — |
