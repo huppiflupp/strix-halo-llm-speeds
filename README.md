@@ -769,6 +769,54 @@ What the x9 runs show:
 * **Larger quants mainly cost prompt speed**: more of the model sits in RAM, and prompt
   processing drops to 234–304 tok/s, while generation stays at 40–48 tok/s.
 
+What the x9 re-measurement with a newer llama.cpp shows (2026-11-25, `other-machines/2026-11-25-x9.jsonl`):
+
+Same card and workstation, 16,384-token context, `-ngl 99 -fa on -b 2048 -ub 2048 -t 12 -np 1`. The model is a
+mixed file used by the x9 service since 2026-10-06 (expert layers 0–11 in Q4_0, the other experts in IQ3_XXS,
+the rest in IQ4_XS; 15.6 GB). The harness differs from the table above, so compare only within this table:
+generation is all tokens over all time for three texts (English prose, German prose, Python) of 500 tokens each
+at temperature 0, prompt speed is the median of three 4,017-token prompts
+([`x9-moecache-bench.py`](other-machines/x9-moecache-bench.py)). Two values mean two runs.
+
+| llama.cpp | Experts and loading | Speculation | Generation tok/s | Prompt tok/s |
+|---|---|---|---:|---:|
+| bed0a85 (2026-10-03) | `--n-cpu-moe 12`, mmap (the service until now) | — | 67.7 / 67.7 | 1260 / 1244 |
+| bed0a85 | `--n-cpu-moe 12 -lm none` | — | 65.4 | 1719 |
+| 5917b39ff (2026-11-25) | `--n-cpu-moe 12`, mmap | — | 67.2 / 66.4 | 1357 / 1356 |
+| 5917b39ff | `--n-cpu-moe 12 -lm none` | — | 68.6 | 1954 |
+| 5917b39ff | `--n-cpu-moe 12 --moe-cache-mib 600`, mmap | — | 39.4 | 1401 |
+| 5917b39ff | `--n-cpu-moe 20 --moe-cache-mib 2000 -lm none` | — | 69.8 | 1869 |
+| 5917b39ff | `--n-cpu-moe 28 --moe-cache-mib 4300 -lm none` | — | 80.2 | 1843 |
+| 5917b39ff | `--n-cpu-moe 40 --moe-cache-mib 6000 -lm none` | — | 75.3 | 1615 |
+| 5917b39ff | `--n-cpu-moe 40 --moe-cache-mib 7600`, mmap | — | 71.6 | 1279 |
+| 5917b39ff | `--n-cpu-moe 40 --moe-cache-mib 7600 -lm none` | — | 83.8 | 1805 |
+| 5917b39ff | same, `--moe-cache-cpu-share 0.5` | — | 77.9 | 1787 |
+| 5917b39ff | `--n-cpu-moe 40 --moe-cache-mib 8200 -lm none` | — | 86.9 / 86.6 | 1891 / 1890 |
+| 5917b39ff | `--n-cpu-moe 40 --moe-cache-mib 6500 -lm none` | MTP, 1 draft (84 % accepted) | 94.6 | 1605 |
+| 5917b39ff | same | MTP, 2 drafts (73 %) | 99.5 / 99.7 | 1600 / 1602 |
+| 5917b39ff | same | MTP, 3 drafts (62 %) | 96.5 | 1600 |
+| **5917b39ff** | **`--n-cpu-moe 40 --moe-cache-mib 7000 -lm none` (the new service)** | **MTP, 2 drafts (73 %)** | **103.9 / 104.3** | **1643 / 1655** |
+| 5917b39ff | `--n-cpu-moe 40 --moe-cache-mib 7200 -lm none` | MTP, 2 drafts (73 %) | 106.1 | 1677 |
+
+* **The update alone changes little**: with the old settings, generation is unchanged and prompt speed rises by 8 %
+  (14 % with `-lm none` on both builds).
+* **The gain comes from the new MoE cache** (`--moe-cache-mib`): all experts stay in RAM and the card keeps the
+  most used ones. Together with MTP the service goes from **67.7 to 104 tok/s (+54 %)** and from about 1250 to
+  1650 prompt tok/s (+32 %).
+* **`-lm none` matters.** It pins the host experts, so uploads run at full link speed: 71.6 → 83.8 tok/s generation
+  with a 7600 MiB cache.
+* **A small cache is worse than none** (39.4 tok/s with 600 MiB), and letting the CPU compute half of the misses
+  did not help on this machine (77.9 against 83.8).
+* **MTP now pays**: +20 % (86.9 → 104 tok/s, at a smaller cache). On the old settings it had cost speed (2026-10-06).
+* **Leave room on the card.** Out of memory, partly only after loading: 8500 MiB cache without MTP, 7600 MiB with
+  MTP. Hence 7000 MiB. A stress test with that setting
+  ([`x9-moecache-stress.py`](other-machines/x9-moecache-stress.py)) ran 41 rounds in 464 s with prompts up to
+  about 15,200 tokens, no error, peak 10,272 of 11,264 MiB, 92.2 tok/s generation with half of the requests
+  sampled at temperature 0.8.
+* **Correctness**: perplexity without the cache is the same on both builds (7.2411 against 7.2463 ± 0.14, 64 chunks
+  of 512 tokens of wikitext-2). The perplexity run does not exercise the cache; with it, 19 of 20 first-token probes
+  have the same top token as the new build without the cache (largest probability difference 0.07).
+
 What the 245k re-measurement (2026-11-04, `other-machines/2026-11-04-245k.jsonl`) shows:
 
 * **The first figure is roughly reproduced.** 255.7 against 275 tok/s generation (-7 %) and 4073 against 4189 prompt tok/s, same build, one run each and no variance estimate, so the gap may be noise; the 7,382-token prompt is the `sampling.cpp` of the local checkout (20 tokens longer than on the x9), run with [`other-machines/x9bench-245k.py`](other-machines/x9bench-245k.py), a copy of `x9bench.py` with other paths and 14 threads.
@@ -834,4 +882,4 @@ files.
 | ai395-setup (private) | candidate run, colibri and Qwen3.8 measurements |
 | strix-halo-kernel-lab (private) | lab book, the gains of the lab builds, the first GLM-5.3-Flash load attempt |
 
-Last consolidated: 2026-11-17.
+Last consolidated: 2026-11-25.
